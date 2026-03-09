@@ -1,0 +1,10 @@
+services:
+  db:
+    build:
+      context: .
+    container_name: lmsdb
+    restart: always
+    ports:
+    - '3306:3306'
+    volumes:
+    - ./mysql:/var/lib/mysql
