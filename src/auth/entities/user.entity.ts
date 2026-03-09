@@ -1,5 +1,6 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { ValidRoles } from "../interfaces/validRoles";
+import { Project } from "src/projects/entities/project.entity";
 
 @Entity('users')
 export class User {
@@ -28,6 +29,11 @@ export class User {
         default: [ValidRoles.user] 
     })
     roles!:string[]; 
+
+    @OneToMany( () => Project, (project) => project.author)
+    projects ?: Project[];
+
+    
 
 
     @BeforeInsert()

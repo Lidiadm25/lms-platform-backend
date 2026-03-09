@@ -3,6 +3,12 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '@nestjs/config'; 
 import { AuthModule } from './auth/auth.module';
+import { CursosModule } from './cursos/cursos.module';
+import { LessonsModule } from './lessons/lessons.module';
+import { UnitsModule } from './units/units.module';
+import { SectionsModule } from './sections/sections.module';
+import { TasksModule } from './tasks/tasks.module';
+import { CategoriesModule } from './categories/categories.module';
 
 
 
@@ -20,6 +26,12 @@ import { AuthModule } from './auth/auth.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    CursosModule,
+    LessonsModule,
+    UnitsModule,
+    SectionsModule,
+    TasksModule,
+    CategoriesModule,
     
         
   ],
