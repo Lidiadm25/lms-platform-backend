@@ -1,5 +1,6 @@
+import { Lesson } from "src/lessons/entities/lesson.entity";
 import { Project } from "src/projects/entities/project.entity";
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("sections")
 export class Section {
@@ -13,4 +14,7 @@ export class Section {
 
     @ManyToOne(() => Project, (project) => project.units )
     project!:Project;
+
+    @OneToMany( () => Lesson, (lesson) => lesson.unit)
+        lessons ?: Lesson[];
 }

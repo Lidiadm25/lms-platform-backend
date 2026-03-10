@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Section } from "src/sections/entities/section.entity";
+import { Task } from "src/tasks/entities/task.entity";
+import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("lessons")
 export class Lesson {
@@ -6,7 +8,11 @@ export class Lesson {
         id!:string;
 
 
-    url_file!:string;
+    url_file?:string;
 
-    
+    @ManyToOne(() => Section, (section) => section.lessons )
+        unit!:Section;
+
+    @OneToMany(() => Task, (tasks) => tasks.lesson_task)
+    tasks!:Task[];
 }

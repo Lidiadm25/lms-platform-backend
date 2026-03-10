@@ -1,7 +1,9 @@
 import { User } from "src/auth/entities/user.entity";
 import { Lesson } from "src/lessons/entities/lesson.entity";
 import { Section } from "src/sections/entities/section.entity";
-import { Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Survey } from "src/survey/entities/survey.entity";
+import { UserProject } from "src/user-projects/entities/user-project.entity";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("projects")
 export class Project {
@@ -9,17 +11,26 @@ export class Project {
     @PrimaryGeneratedColumn('uuid')
     id!:string;
 
+    @Column({ type : "text", nullable: false,length: 50})
     title!:string;
 
     @ManyToOne(() => User, (user) => user.projects)
     author!:User;
 
+    @Column({ type : "text", nullable: false, length: 100})
     description!:string;
 
+    @Column({type: "integer", default:105, nullable:false}) // TODO: utilizarlo como horas en vez de días
     duration!:number;
 
-    @ManyToOne(() => Section, (unit)=> unit.project)
+    @OneToMany(() => Section, (unit)=> unit.project)
     units?: Section[];
 
+    @ManyToOne(()=> Survey, (survey) => survey.projects)
+    survey!:Survey;
+
+    @OneToMany(()=> UserProject, (userProject) => userProject.project)
+    userProjects !: UserProject[];
+        
    // category!:Category;
 }

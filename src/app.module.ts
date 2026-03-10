@@ -9,6 +9,10 @@ import { UnitsModule } from './units/units.module';
 import { SectionsModule } from './sections/sections.module';
 import { TasksModule } from './tasks/tasks.module';
 import { CategoriesModule } from './categories/categories.module';
+import { SurveyModule } from './survey/survey.module';
+import { QuestionModule } from './question/question.module';
+import { AnswerModule } from './answer/answer.module';
+import { UsersProjectsModule } from './users-projects/users-projects.module';
 
 
 
@@ -32,6 +36,10 @@ import { CategoriesModule } from './categories/categories.module';
     SectionsModule,
     TasksModule,
     CategoriesModule,
+    SurveyModule,
+    QuestionModule,
+    AnswerModule,
+    UsersProjectsModule,
     
         
   ],

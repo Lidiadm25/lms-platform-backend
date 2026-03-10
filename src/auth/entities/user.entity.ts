@@ -1,6 +1,9 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { ValidRoles } from "../interfaces/validRoles";
 import { Project } from "src/projects/entities/project.entity";
+import { Task } from "src/tasks/entities/task.entity";
+import { Survey } from "src/survey/entities/survey.entity";
+import { UserProject } from "src/user-projects/entities/user-project.entity";
 
 @Entity('users')
 export class User {
@@ -33,7 +36,18 @@ export class User {
     @OneToMany( () => Project, (project) => project.author)
     projects ?: Project[];
 
-    
+    @OneToMany( () => Task, (task) => task.user_author)
+    tasks !: Task[];
+
+    @OneToMany( () => Task, (task) => task.user_task)
+    tasks_created !: Task[];
+
+    @OneToMany(() => Survey, (survey) => survey.user_author)
+    surveys!: Survey[];
+
+    @OneToMany(()=> UserProject, (userProject) => userProject.user)
+    userProjects !: UserProject[];
+
 
 
     @BeforeInsert()
