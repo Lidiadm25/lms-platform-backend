@@ -3,16 +3,18 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '@nestjs/config'; 
 import { AuthModule } from './auth/auth.module';
-import { CursosModule } from './cursos/cursos.module';
+
 import { LessonsModule } from './lessons/lessons.module';
-import { UnitsModule } from './units/units.module';
+
 import { SectionsModule } from './sections/sections.module';
 import { TasksModule } from './tasks/tasks.module';
-import { CategoriesModule } from './categories/categories.module';
+
 import { SurveyModule } from './survey/survey.module';
 import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
-import { UsersProjectsModule } from './users-projects/users-projects.module';
+import { UsersProjectsModule } from './user-projects/users-projects.module';
+import { ProjectModule } from './project/project.module';
+
 
 
 
@@ -30,16 +32,15 @@ import { UsersProjectsModule } from './users-projects/users-projects.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    CursosModule,
     LessonsModule,
-    UnitsModule,
     SectionsModule,
     TasksModule,
-    CategoriesModule,
     SurveyModule,
     QuestionModule,
     AnswerModule,
     UsersProjectsModule,
+    ProjectModule,
+
     
         
   ],

@@ -1,5 +1,6 @@
 import { Lesson } from "src/lessons/entities/lesson.entity";
-import { Project } from "src/projects/entities/project.entity";
+import { Project } from "src/project/entities/project.entity";
+
 import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("sections")

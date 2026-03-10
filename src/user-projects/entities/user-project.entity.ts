@@ -1,5 +1,6 @@
 import { User } from "src/auth/entities/user.entity";
-import { Project } from "src/projects/entities/project.entity";
+import { Project } from "src/project/entities/project.entity";
+
 import { AfterInsert, AfterLoad, AfterUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("users_projects")

@@ -1,9 +1,10 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { ValidRoles } from "../interfaces/validRoles";
-import { Project } from "src/projects/entities/project.entity";
+
 import { Task } from "src/tasks/entities/task.entity";
 import { Survey } from "src/survey/entities/survey.entity";
 import { UserProject } from "src/user-projects/entities/user-project.entity";
+import { Project } from "src/project/entities/project.entity";
 
 @Entity('users')
 export class User {

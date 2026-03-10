@@ -1,5 +1,6 @@
 import { User } from "src/auth/entities/user.entity";
-import { Project } from "src/projects/entities/project.entity";
+import { Project } from "src/project/entities/project.entity";
+
 import { Question } from "src/question/entities/question.entity";
 import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
