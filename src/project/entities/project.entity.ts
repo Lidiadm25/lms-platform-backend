@@ -1,5 +1,4 @@
 import { User } from "src/auth/entities/user.entity";
-import { Lesson } from "src/lessons/entities/lesson.entity";
 import { Section } from "src/sections/entities/section.entity";
 import { Survey } from "src/survey/entities/survey.entity";
 import { UserProject } from "src/user-projects/entities/user-project.entity";
@@ -11,13 +10,13 @@ export class Project {
     @PrimaryGeneratedColumn('uuid')
     id!:string;
 
-    @Column({ type : "text", nullable: false,length: 50})
+    @Column({ type : "varchar", nullable: false, length: "50"})
     title!:string;
 
     @ManyToOne(() => User, (user) => user.projects)
     author!:User;
 
-    @Column({ type : "text", nullable: false, length: 100})
+    @Column({ type : "varchar", nullable: false, length: 100})
     description!:string;
 
     @Column({type: "integer", default:105, nullable:false}) // TODO: utilizarlo como horas en vez de días

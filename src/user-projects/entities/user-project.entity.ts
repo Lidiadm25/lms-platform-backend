@@ -3,7 +3,7 @@ import { Project } from "src/project/entities/project.entity";
 
 import { AfterInsert, AfterLoad, AfterUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("users_projects")
+@Entity("users-projects")
 export class UserProject {
 
     @PrimaryGeneratedColumn('uuid')
@@ -14,8 +14,9 @@ export class UserProject {
 
     @ManyToOne(()=> Project, (project) => project.userProjects)
     project!: Project;
-
-    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+ 
+ 
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     start_date !: string;
 
     @Column({ type : "date"})
@@ -30,5 +31,7 @@ export class UserProject {
 
         this.end_date = fecha_inicio;
     }
+
+    
     
 }

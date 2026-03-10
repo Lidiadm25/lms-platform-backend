@@ -21,7 +21,7 @@ import { ProjectModule } from './project/project.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    AuthModule,
+    
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -40,6 +40,8 @@ import { ProjectModule } from './project/project.module';
     AnswerModule,
     UsersProjectsModule,
     ProjectModule,
+    AuthModule,
+    
 
     
         
