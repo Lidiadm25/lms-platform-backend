@@ -10,6 +10,8 @@ export class Lesson {
 
     url_file?:string;
 
+    title!:string;
+
     @ManyToOne(() => Section, (section) => section.lessons )
         unit!:Section;
 

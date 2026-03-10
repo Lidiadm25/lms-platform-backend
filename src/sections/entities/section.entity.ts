@@ -8,9 +8,8 @@ export class Section {
 
     @PrimaryGeneratedColumn('uuid')
     id!:string;
-
-    duration_lesson !: number;
-
+    
+    title!:string;
     description!: string;
 
     @ManyToOne(() => Project, (project) => project.units )

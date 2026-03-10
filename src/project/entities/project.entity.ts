@@ -26,7 +26,7 @@ export class Project {
     units?: Section[];
 
     @ManyToOne(()=> Survey, (survey) => survey.projects)
-    survey!:Survey;
+    survey?:Survey;
 
     @OneToMany(()=> UserProject, (userProject) => userProject.project)
     userProjects !: UserProject[];
