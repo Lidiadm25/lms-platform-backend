@@ -1,58 +1,60 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/auth/entities/user.entity';
-import { UUID } from 'typeorm/driver/mongodb/bson.typings.js';
 import { isUUID } from 'class-validator';
-
 
 @Injectable()
 export class ProjectService {
+  private readonly logger = new Logger('ProjectService');
 
-   private readonly logger = new Logger('ProjectService');
-
-
-  constructor (
+  constructor(
     @InjectRepository(Project)
-    private readonly projectRepository: Repository<Project>
-
+    private readonly projectRepository: Repository<Project>,
   ) {}
-
-  async create(createProjectDto: CreateProjectDto, user:User) {
+  // TODO. change user data / select
+  async create(createProjectDto: CreateProjectDto, user: User) {
     try {
-       const project = this.projectRepository.create({
-        ...createProjectDto, author: user
-      }) 
-
+      const project = this.projectRepository.create({
+        ...createProjectDto,
+        author: user,
+      });
       await this.projectRepository.save(project);
-      console.log({project})
-      return {project};
-       
+      return { project };
     } catch (error) {
-      
       this.handleDBExceptions(error);
     }
   }
 
- async findAll() {
+  // Returns all projects
+  async findAll() {
     return await this.projectRepository.find();
   }
 
+  // Returns a project by uuid and its sections/lessons
   async findOne(id: string) {
-
     let project: Project | null;
 
-    if(isUUID(id)){
-      project = await this.projectRepository.findOneBy({ id: id})
+    if (isUUID(id)) {
+      project = await this.projectRepository.findOne({
+        where: { id },
+        relations: ['units', 'units.lessons'],
+      });
     } else {
       project = null;
     }
 
-    if(!project){
-      throw new NotFoundException(`Project with id: ${ id } not found`)
+    if (!project) {
+      throw new NotFoundException(`Project with id: ${id} not found`);
     }
 
     return project;
@@ -66,15 +68,13 @@ export class ProjectService {
     return `This action removes a #${id} project`;
   }
 
+  private handleDBExceptions(error: any) {
+    if (error.code === '23505') throw new BadRequestException(error.detail);
 
-   private handleDBExceptions( error: any ) {
-
-    if ( error.code === '23505' )
-      throw new BadRequestException(error.detail);
-    
-    this.logger.error(error)
+    this.logger.error(error);
     // console.log(error)
-    throw new InternalServerErrorException('Unexpected error, check server logs');
-
+    throw new InternalServerErrorException(
+      'Unexpected error, check server logs',
+    );
   }
 }
