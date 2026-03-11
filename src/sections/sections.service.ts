@@ -1,11 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
+import { User } from 'src/auth/entities/user.entity';
+import { Repository } from 'typeorm';
+import { Section } from './entities/section.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class SectionsService {
-  create(createSectionDto: CreateSectionDto) {
-    return 'This action adds a new section';
+
+  constructor(
+    @InjectRepository(Section)
+    private readonly sectionRepository:Repository<Section>
+  ){}
+
+ async create(createSectionDto: CreateSectionDto) {
+     try {
+       const section = this.sectionRepository.create({
+        ...createSectionDto
+      }) 
+      await this.sectionRepository.save(section);
+      return {section};
+       
+    } catch (error) {
+      
+    }
+
+   
   }
 
   findAll() {

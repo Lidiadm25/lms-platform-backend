@@ -1,7 +1,9 @@
 import { Type } from "class-transformer";
-import { IsArray, IsString, MinLength, ValidateNested } from "class-validator";
+import { IsArray, IsOptional, IsString, MinLength, ValidateNested } from "class-validator";
 import { CreateLessonDto } from "src/lessons/dto/create-lesson.dto";
 import { Lesson } from "src/lessons/entities/lesson.entity";
+import { CreateProjectDto } from "src/project/dto/create-project.dto";
+import { Project } from "src/project/entities/project.entity";
 
 export class CreateSectionDto {
     @IsString()
@@ -13,8 +15,13 @@ export class CreateSectionDto {
     description!:string;
 
 
+    @IsString()
+    project?:string;
+
+
     
     @Type(() => CreateLessonDto)
+    @IsOptional()
     @ValidateNested()
     lessons!: Lesson[];
     

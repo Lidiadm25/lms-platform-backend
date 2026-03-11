@@ -1,10 +1,19 @@
+import { getRepositoryToken, InjectRepository } from "@nestjs/typeorm";
 import { Lesson } from "src/lessons/entities/lesson.entity";
 import { Project } from "src/project/entities/project.entity";
 
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, Generated, getRepository, ManyToOne, OneToMany, PrimaryGeneratedColumn, Repository } from "typeorm";
 
 @Entity("sections")
 export class Section {
+
+
+    constructor(
+        @InjectRepository(Section)
+        private readonly sectionRepository:Repository<Section>
+    ){
+
+    }
 
     @PrimaryGeneratedColumn('uuid')
     id!:string;
@@ -14,9 +23,27 @@ export class Section {
     @Column({ type : "varchar", nullable: false, length: "50"})
     description!: string;
 
+    /*@Column({type: "int"})
+    order !: number;*/
+
     @ManyToOne(() => Project, (project) => project.units )
-    project!:Project;
+    project!:string;
 
     @OneToMany( () => Lesson, (lesson) => lesson.unit, {cascade:true})
         lessons ?: Lesson[];
+
+
+    /* @BeforeInsert()
+    async generarNumero() {
+    const ultimo = await getRepository(Section)
+      .createQueryBuilder("section")
+      .orderBy("section.order", "DESC")
+      .getOne();
+
+    this.order = ultimo ? ultimo.order + 1 : 1;
+  }
+  */
 }
+
+
+
