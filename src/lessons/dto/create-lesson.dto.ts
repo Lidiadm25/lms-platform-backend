@@ -1,12 +1,13 @@
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
+import { Section } from "src/sections/entities/section.entity";
 
 export class CreateLessonDto {
 
     @IsString()
     title!:string;
     
-
-    //unit!:string; // utilizo el título por ahora
+    @IsString()
+    unit!:string; 
 
     //task?:string; // id del task
 }

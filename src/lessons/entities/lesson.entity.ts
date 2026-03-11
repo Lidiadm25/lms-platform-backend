@@ -1,9 +1,11 @@
+import { InjectRepository } from "@nestjs/typeorm";
 import { Section } from "src/sections/entities/section.entity";
 import { Task } from "src/tasks/entities/task.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("lessons")
 export class Lesson {
+
     @PrimaryGeneratedColumn('uuid')
         id!:string;
 
@@ -14,7 +16,7 @@ export class Lesson {
     title!:string;
 
     @ManyToOne(() => Section, (section) => section.lessons )
-        unit!:Section;
+        unit!:string;
 
     @OneToMany(() => Task, (tasks) => tasks.lesson_task, {cascade:true})
     tasks!:Task[];
