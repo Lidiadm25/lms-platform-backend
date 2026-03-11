@@ -1,4 +1,7 @@
-import { IsArray, IsString, MinLength } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsString, MinLength, ValidateNested } from "class-validator";
+import { CreateLessonDto } from "src/lessons/dto/create-lesson.dto";
+import { Lesson } from "src/lessons/entities/lesson.entity";
 
 export class CreateSectionDto {
     @IsString()
@@ -8,13 +11,12 @@ export class CreateSectionDto {
     @IsString()
     @MinLength(1)
     description!:string;
-/*
-    @IsString()
-    project!:string;
 
-    @IsString()
-    @IsArray({ each: true})
-    lessons!: string[];
-    */
+
+    
+    @Type(() => CreateLessonDto)
+    @ValidateNested()
+    lessons!: Lesson[];
+    
 
 }

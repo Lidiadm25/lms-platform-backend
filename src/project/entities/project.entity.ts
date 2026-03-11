@@ -13,8 +13,8 @@ export class Project {
     @Column({ type : "varchar", nullable: false, length: "50"})
     title!:string;
 
-    @ManyToOne(() => User, (user) => user.projects)
-    author!:User;
+    @ManyToOne(() => User, (user) => user.projects, {eager:true})
+    author?:User;
 
     @Column({ type : "varchar", nullable: false, length: 100})
     description!:string;
@@ -22,14 +22,14 @@ export class Project {
     @Column({type: "integer", default:105, nullable:false}) // TODO: utilizarlo como horas en vez de días
     duration!:number;
 
-    @OneToMany(() => Section, (unit)=> unit.project)
+    @OneToMany(() => Section, (unit)=> unit.project, {cascade:true})
     units?: Section[];
 
     @ManyToOne(()=> Survey, (survey) => survey.projects)
     survey?:Survey;
 
-    @OneToMany(()=> UserProject, (userProject) => userProject.project)
+    @OneToMany(()=> UserProject, (userProject) => userProject.project, {cascade:true})
     userProjects !: UserProject[];
         
-   // category!:Category;
+   
 }

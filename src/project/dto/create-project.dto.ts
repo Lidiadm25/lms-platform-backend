@@ -10,19 +10,13 @@ export class CreateProjectDto {
     @IsString()
     @MinLength(1)
     title!:string;
-
-    @IsString()
-    @MinLength(1)
-    author!:User;
     
     @IsString()
     @MinLength(1)
     description!:string;
 
     
-    @IsArray({
-        each: true
-    })
+
     @Type(() => CreateSectionDto)
     @ArrayMinSize(1)
     @ValidateNested()

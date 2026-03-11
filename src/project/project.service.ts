@@ -1,38 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { Repository } from 'typeorm';
-import { Section } from 'src/sections/entities/section.entity';
 import { User } from 'src/auth/entities/user.entity';
-import { DataSource } from 'typeorm/browser';
+
 
 @Injectable()
 export class ProjectService {
 
+   private readonly logger = new Logger('ProjectService');
+
+
   constructor (
     @InjectRepository(Project)
-    private readonly projectRepository: Repository<Project>,
-
-    @InjectRepository(Section)
-    private readonly sectionRepository:Repository<Section>,
-
-    private readonly dataSource:DataSource
+    private readonly projectRepository: Repository<Project>
 
   ) {}
 
   async create(createProjectDto: CreateProjectDto, user:User) {
     try {
-      const unitsId = createProjectDto.units.map((unit) => unit.id)
-      const project = new Project();
-     // project.units = units;
+       const project = this.projectRepository.create({
+        ...createProjectDto, author: user
+      }) 
 
-
+      await this.projectRepository.save(project);
+      console.log({project})
+      return {project};
+       
     } catch (error) {
       
+      this.handleDBExceptions(error);
     }
-    return {createProjectDto, user}
   }
 
   findAll() {
@@ -49,5 +49,17 @@ export class ProjectService {
 
   remove(id: number) {
     return `This action removes a #${id} project`;
+  }
+
+
+   private handleDBExceptions( error: any ) {
+
+    if ( error.code === '23505' )
+      throw new BadRequestException(error.detail);
+    
+    this.logger.error(error)
+    // console.log(error)
+    throw new InternalServerErrorException('Unexpected error, check server logs');
+
   }
 }

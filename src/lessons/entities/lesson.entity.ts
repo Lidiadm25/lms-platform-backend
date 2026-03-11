@@ -1,6 +1,6 @@
 import { Section } from "src/sections/entities/section.entity";
 import { Task } from "src/tasks/entities/task.entity";
-import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("lessons")
 export class Lesson {
@@ -8,13 +8,14 @@ export class Lesson {
         id!:string;
 
 
+    @Column({ type : "varchar", nullable: true, length: "150"})
     url_file?:string;
-
+    @Column({ type : "varchar", nullable: false, length: "50"})
     title!:string;
 
     @ManyToOne(() => Section, (section) => section.lessons )
         unit!:Section;
 
-    @OneToMany(() => Task, (tasks) => tasks.lesson_task)
+    @OneToMany(() => Task, (tasks) => tasks.lesson_task, {cascade:true})
     tasks!:Task[];
 }

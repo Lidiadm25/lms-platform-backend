@@ -36,7 +36,7 @@ export class AuthController {
     @GetUser('email') userEmail :string,
     @RawHeaders() rawHeaders: string[],
   ){
-    console.log(request);
+    console.log("request:", request);
     return { 
       user,
       userEmail,
@@ -61,7 +61,7 @@ export class AuthController {
     }
   }
 
-  // Utilizando un decorador compuerto
+  // Utilizando un decorador compuesto
   @Get('private3')
   @Auth( ValidRoles.superUser)
   privateRoute3(@GetUser() user:User){
