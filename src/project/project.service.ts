@@ -1,10 +1,12 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/auth/entities/user.entity';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings.js';
+import { isUUID } from 'class-validator';
 
 
 @Injectable()
@@ -35,12 +37,25 @@ export class ProjectService {
     }
   }
 
-  findAll() {
-    return `This action returns all project`;
+ async findAll() {
+    return await this.projectRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} project`;
+  async findOne(id: string) {
+
+    let project: Project | null;
+
+    if(isUUID(id)){
+      project = await this.projectRepository.findOneBy({ id: id})
+    } else {
+      project = null;
+    }
+
+    if(!project){
+      throw new NotFoundException(`Project with id: ${ id } not found`)
+    }
+
+    return project;
   }
 
   update(id: number, updateProjectDto: UpdateProjectDto) {
