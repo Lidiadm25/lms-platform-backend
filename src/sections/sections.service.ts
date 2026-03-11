@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { User } from 'src/auth/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Section } from './entities/section.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -29,19 +29,42 @@ export class SectionsService {
    
   }
 
-  findAll() {
+  /* findAll() {
     return `This action returns all sections`;
+  } */
+
+ async findOne(id: string) {
+
+  const section = await this.sectionRepository.findOneBy({id: id})
+
+  if (!section) {
+    throw new NotFoundException(`The section with id ${id} is not found`)
+  }
+    return {section};
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} section`;
+  async update(id: string, updateSectionDto: UpdateSectionDto) {
+
+    if(updateSectionDto.id && updateSectionDto.id !== id) {
+      throw new BadRequestException(`Section ID is not valid`)
+    }
+
+    const section = await this.sectionRepository.findOneBy({ id: id})
+    
+    if(!section){
+      throw new NotFoundException(`Section with id ${id} not found`)
+    }
+
+    const updated = await this.sectionRepository.merge(section, updateSectionDto);
+
+
+    return await this.sectionRepository.save(updated);
   }
 
-  update(id: number, updateSectionDto: UpdateSectionDto) {
-    return `This action updates a #${id} section`;
-  }
+  async remove(id: string) {
 
-  remove(id: number) {
-    return `This action removes a #${id} section`;
+    const section = await this.findOne (id);
+
+    await this.sectionRepository.remove(section.section);
   }
 }

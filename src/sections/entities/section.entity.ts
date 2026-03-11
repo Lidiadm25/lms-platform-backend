@@ -7,14 +7,6 @@ import { BeforeInsert, Column, Entity, Generated, getRepository, ManyToOne, OneT
 @Entity("sections")
 export class Section {
 
-
-    constructor(
-        @InjectRepository(Section)
-        private readonly sectionRepository:Repository<Section>
-    ){
-
-    }
-
     @PrimaryGeneratedColumn('uuid')
     id!:string;
     
@@ -29,7 +21,7 @@ export class Section {
     @ManyToOne(() => Project, (project) => project.units )
     project!:string;
 
-    @OneToMany( () => Lesson, (lesson) => lesson.unit, {cascade:true})
+    @OneToMany( () => Lesson, (lesson) => lesson.unit, {cascade:true, onDelete:"CASCADE", eager:true})
         lessons ?: Lesson[];
 
 

@@ -17,23 +17,26 @@ export class SectionsController {
     return this.sectionsService.create(createSectionDto);
   }
 
-  @Get()
+
+  /*@Get()
   findAll() {
     return this.sectionsService.findAll();
-  }
+  } */
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.sectionsService.findOne(+id);
+    return this.sectionsService.findOne(id);
   }
 
   @Patch(':id')
+  @Auth(ValidRoles.admin)
   update(@Param('id') id: string, @Body() updateSectionDto: UpdateSectionDto) {
-    return this.sectionsService.update(+id, updateSectionDto);
+    return this.sectionsService.update(id, updateSectionDto);
   }
 
   @Delete(':id')
+  @Auth(ValidRoles.admin)
   remove(@Param('id') id: string) {
-    return this.sectionsService.remove(+id);
+    return this.sectionsService.remove(id);
   }
 }
