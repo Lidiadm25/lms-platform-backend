@@ -15,7 +15,7 @@ export class Lesson {
     @Column({ type : "varchar", nullable: false, length: "50"})
     title!:string;
 
-    @ManyToOne(() => Section, (section) => section.lessons )
+    @ManyToOne(() => Section, (section) => section.lessons, {onDelete:'CASCADE'} )
         unit!:string;
 
     @OneToMany(() => Task, (tasks) => tasks.lesson_task, {cascade:true})
