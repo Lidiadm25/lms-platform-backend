@@ -60,11 +60,24 @@ export class ProjectService {
     return project;
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(id: string, updateProjectDto: UpdateProjectDto) {
+
+    if(updateProjectDto.id && updateProjectDto.id!== id) {
+      throw new BadRequestException(`Project ID is not valid`)
+    }
+
+    const project = await this.projectRepository.findOneBy({id: id});
+
+    if(!project){
+      throw new NotFoundException(`Project with id ${id} not found`)
+    }
+
+    const updated = await this.projectRepository.merge(project,updateProjectDto)
+
+    return await this.projectRepository.save(updated);
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} project`;
   }
 
