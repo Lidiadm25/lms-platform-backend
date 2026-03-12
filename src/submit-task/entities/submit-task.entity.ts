@@ -15,6 +15,6 @@ export class SubmitTask {
     @Column({nullable: true})
     grade!:number;
 
-    @ManyToOne( () => Task)
+    @ManyToOne( () => Task, (task) => task.submissions)
     task!: Task;
 }

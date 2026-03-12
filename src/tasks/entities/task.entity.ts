@@ -23,7 +23,7 @@ export class Task {
     @ManyToOne(()=> Lesson, (lesson) => lesson.tasks)
     lesson_task!:Lesson;
 
-    @OneToMany(() => SubmitTask, sub => sub.task)
+    @OneToMany(() => SubmitTask, (sub) => sub.task)
     submissions!: SubmitTask[];
     
 

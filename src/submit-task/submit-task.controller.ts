@@ -2,14 +2,16 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SubmitTaskService } from './submit-task.service';
 import { CreateSubmitTaskDto } from './dto/create-submit-task.dto';
 import { UpdateSubmitTaskDto } from './dto/update-submit-task.dto';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { User } from 'src/auth/entities/user.entity';
 
 @Controller('submit-task')
 export class SubmitTaskController {
   constructor(private readonly submitTaskService: SubmitTaskService) {}
 
   @Post()
-  create(@Body() createSubmitTaskDto: CreateSubmitTaskDto) {
-    return this.submitTaskService.create(createSubmitTaskDto);
+  create(@Body() createSubmitTaskDto: CreateSubmitTaskDto, @GetUser() user: User) {
+    return this.submitTaskService.create(createSubmitTaskDto, user);
   }
 
   @Get()

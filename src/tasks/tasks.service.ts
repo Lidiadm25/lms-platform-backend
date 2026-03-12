@@ -1,11 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { User } from 'src/auth/entities/user.entity';
+import { Task } from './entities/task.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Lesson } from 'src/lessons/entities/lesson.entity';
 
 @Injectable()
 export class TasksService {
-  create(createTaskDto: CreateTaskDto) {
-    return 'This action adds a new task';
+
+  constructor(
+    @InjectRepository(Task)
+    private readonly taskRepository:Repository<Task>,
+    @InjectRepository(Lesson)
+    private readonly lessonRepository:Repository<Lesson>
+  ){}
+
+  async create(createTaskDto: CreateTaskDto, user:User) {
+    const lesson = await this.lessonRepository.findOneBy({
+      id: createTaskDto.lesson
+    })
+
+    if(!lesson){
+      throw new NotFoundException(`Lesson with id ${createTaskDto.lesson} not found`)
+    }
+
+    const newTask = this.taskRepository.create({
+     ...createTaskDto,
+     user_author: user
+
+    })
+
+    return await this.taskRepository.save(newTask);
   }
 
   findAll() {

@@ -14,6 +14,8 @@ import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
 import { UsersProjectsModule } from './user-projects/users-projects.module';
 import { ProjectModule } from './project/project.module';
+import { SubmitTaskModule } from './submit-task/submit-task.module';
+
 
 
 
@@ -41,11 +43,13 @@ import { ProjectModule } from './project/project.module';
     UsersProjectsModule,
     ProjectModule,
     AuthModule,
+    SubmitTaskModule,
     
 
     
         
   ],
+
  
 })
 export class AppModule {
