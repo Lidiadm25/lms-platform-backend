@@ -20,8 +20,8 @@ export class UserProject {
     start_date !: string;
 
     @Column({ type : "date", nullable:true})
-    end_date ?: Date;
-    
+    end_date !: Date;
+
     /*
     @AfterLoad()
     @AfterInsert()

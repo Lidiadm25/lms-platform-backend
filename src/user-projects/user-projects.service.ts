@@ -4,6 +4,7 @@ import { UserProject } from './entities/user-project.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDtoProject } from './dtos/create-user-projects.dto';
 import { Project } from 'src/project/entities/project.entity';
+import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
 
 @Injectable()
 export class UserProjectsService {
@@ -48,4 +49,24 @@ export class UserProjectsService {
         return await this.userProjectRepository.save(newUser)
 
     }
+
+    async update(id:string, pId:string,dto : UpdatedUserDtoProject){
+
+        const user_pro = await this.userProjectRepository.findOneBy(
+            {
+            user : { id: id},
+            project: {id: pId}
+            }
+        )
+
+        if(!user_pro){
+            throw new NotFoundException(`User not asigned to the project`)
+        }
+
+        const updated = await this.userProjectRepository.merge(user_pro, dto);
+
+        return await this.userProjectRepository.save(updated);
+
+    }
+
 }
