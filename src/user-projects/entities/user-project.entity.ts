@@ -9,19 +9,20 @@ export class UserProject {
     @PrimaryGeneratedColumn('uuid')
     id!:string;
 
-    @ManyToOne (() => User, (users) => users.userProjects)
+    @ManyToOne (() => User, (users) => users.userProjects,{onDelete: "CASCADE"})
     user!:User;
 
-    @ManyToOne(()=> Project, (project) => project.userProjects)
+    @ManyToOne(()=> Project, (project) => project.userProjects,{onDelete: "CASCADE"})
     project!: Project;
  
  
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     start_date !: string;
 
-    @Column({ type : "date"})
+    @Column({ type : "date", nullable:true})
     end_date ?: Date;
     
+    /*
     @AfterLoad()
     @AfterInsert()
     @AfterUpdate()
@@ -30,7 +31,7 @@ export class UserProject {
         fecha_inicio.setDate(fecha_inicio.getDate() + this.project.duration);
 
         this.end_date = fecha_inicio;
-    }
+    } */
 
     
     
