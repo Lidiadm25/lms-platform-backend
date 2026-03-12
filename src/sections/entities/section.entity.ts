@@ -18,10 +18,10 @@ export class Section {
     /*@Column({type: "int"})
     order !: number;*/
 
-    @ManyToOne(() => Project, (project) => project.units )
+    @ManyToOne(() => Project, (project) => project.units, {onDelete:"CASCADE"} )
     project!:Project;
 
-    @OneToMany( () => Lesson, (lesson) => lesson.unit, {cascade:true, onDelete:"CASCADE", eager:true})
+    @OneToMany( () => Lesson, (lesson) => lesson.unit, {cascade:true, eager:true})
         lessons ?: Lesson[];
 
 

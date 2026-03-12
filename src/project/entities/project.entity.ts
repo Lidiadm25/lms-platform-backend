@@ -22,7 +22,7 @@ export class Project {
     @Column({type: "integer", default:105, nullable:false}) // TODO: utilizarlo como horas en vez de días
     duration!:number;
 
-    @OneToMany(() => Section, (unit)=> unit.project, {cascade:true, eager:true, onDelete:"CASCADE"})
+    @OneToMany(() => Section, (unit)=> unit.project, {cascade:true, eager:true})
     units?: Section[];
 
     @ManyToOne(()=> Survey, (survey) => survey.projects)

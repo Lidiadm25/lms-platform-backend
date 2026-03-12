@@ -77,8 +77,11 @@ export class ProjectService {
     return await this.projectRepository.save(updated);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} project`;
+ async remove(id: string) {
+
+    const project = await this.findOne(id);
+    await this.projectRepository.remove(project);
+    return `Removed successfully`
   }
 
   private handleDBExceptions(error: any) {
