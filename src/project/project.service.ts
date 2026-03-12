@@ -12,6 +12,7 @@ import { Project } from './entities/project.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/auth/entities/user.entity';
 import { isUUID } from 'class-validator';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class ProjectService {
@@ -36,8 +37,22 @@ export class ProjectService {
   }
 
   // Returns all projects
-  async findAll() {
-    return await this.projectRepository.find();
+  async findAll(paginationDto: PaginationDto) {
+
+     const { limit = 10, offset = 0 } = paginationDto;
+
+     const projects = await this.projectRepository.find({
+      take: limit,
+      skip: offset,
+      relations:{
+        units: true
+      }
+     })
+
+     return projects;
+     
+
+    
   }
 
   // Returns a project by uuid and its sections/lessons

@@ -21,7 +21,8 @@ export class Section {
     @ManyToOne(() => Project, (project) => project.units, {onDelete:"CASCADE"} )
     project!:Project;
 
-    @OneToMany( () => Lesson, (lesson) => lesson.unit, {cascade:true, eager:true})
+    // Eager true aquí hace que se carguen automáticamente!!!!!!
+    @OneToMany( () => Lesson, (lesson) => lesson.unit, {cascade:true})
         lessons ?: Lesson[];
 
 
