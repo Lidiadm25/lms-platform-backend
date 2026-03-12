@@ -1,3 +1,4 @@
+import { Project } from 'src/project/entities/project.entity';
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
@@ -5,7 +6,7 @@ import { User } from 'src/auth/entities/user.entity';
 import { Not, Repository } from 'typeorm';
 import { Section } from './entities/section.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Project } from 'src/project/entities/project.entity';
+
 
 
 @Injectable()
@@ -59,11 +60,12 @@ export class SectionsService {
     if(!section){
       throw new NotFoundException(`Section with id ${id} not found`)
     }
+    const {project, ...rest} = updateSectionDto;
 
-    //const updated = await this.sectionRepository.merge(section, updateSectionDto);
+    const updated = await this.sectionRepository.merge(section, rest);
 
 
-   // return await this.sectionRepository.save(updated);
+   return await this.sectionRepository.save(updated);
   }
 
   async remove(id: string) {
