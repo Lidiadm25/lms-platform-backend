@@ -7,6 +7,7 @@ import { ValidRoles } from 'src/auth/interfaces/validRoles';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
 
+
 @Controller('sections')
 export class SectionsController {
   constructor(private readonly sectionsService: SectionsService) {}

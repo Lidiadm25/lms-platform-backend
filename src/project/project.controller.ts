@@ -16,7 +16,7 @@ export class ProjectController {
   create(@Body() createProjectDto: CreateProjectDto,
   @GetUser() user:User
   ) {
-  console.log("aaaaaaaaa")
+ 
     return this.projectService.create(createProjectDto, user);
   }
 

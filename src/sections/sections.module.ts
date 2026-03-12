@@ -4,6 +4,7 @@ import { SectionsController } from './sections.controller';
 import { Section } from './entities/section.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
+import { ProjectModule } from 'src/project/project.module';
 
 @Module({
   controllers: [SectionsController],
@@ -11,7 +12,8 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [
     TypeOrmModule.forFeature([ Section ]),
      AuthModule,
+     ProjectModule
   ],
-  exports:[TypeOrmModule,SectionsService]
+  exports:[TypeOrmModule]
 })
 export class SectionsModule {}

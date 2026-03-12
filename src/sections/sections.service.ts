@@ -1,31 +1,36 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { User } from 'src/auth/entities/user.entity';
 import { Not, Repository } from 'typeorm';
 import { Section } from './entities/section.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Project } from 'src/project/entities/project.entity';
+
 
 @Injectable()
 export class SectionsService {
 
   constructor(
     @InjectRepository(Section)
-    private readonly sectionRepository:Repository<Section>
+    private readonly sectionRepository:Repository<Section>,
+    @InjectRepository(Project)
+    private readonly projectRepository:Repository<Project>
   ){}
 
  async create(createSectionDto: CreateSectionDto) {
-     try {
-       const section = this.sectionRepository.create({
-        ...createSectionDto
-      }) 
-      await this.sectionRepository.save(section);
-      return {section};
-       
-    } catch (error) {
-      
+    const project = await this.projectRepository.findOneBy({id: createSectionDto.project})
+
+    if(!project){
+       throw new NotFoundException(`Project not found with id ${createSectionDto.project}`)
     }
 
+    const newSection = this.sectionRepository.create({
+      ...createSectionDto,
+      project
+    })    
+    
+    return await this.sectionRepository.save(newSection);
    
   }
 
@@ -55,10 +60,10 @@ export class SectionsService {
       throw new NotFoundException(`Section with id ${id} not found`)
     }
 
-    const updated = await this.sectionRepository.merge(section, updateSectionDto);
+    //const updated = await this.sectionRepository.merge(section, updateSectionDto);
 
 
-    return await this.sectionRepository.save(updated);
+   // return await this.sectionRepository.save(updated);
   }
 
   async remove(id: string) {

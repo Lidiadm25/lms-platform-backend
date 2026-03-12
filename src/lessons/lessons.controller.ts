@@ -4,6 +4,7 @@ import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { ValidRoles } from 'src/auth/interfaces/validRoles';
+import { CreateOneLessonDto } from './dto/create-one-lesson.dto';
 
 
 @Controller('lessons')
@@ -12,8 +13,8 @@ export class LessonsController {
 
   @Post()
   @Auth(ValidRoles.admin)
-  create(@Body() createLessonDto: CreateLessonDto) {
-    return this.lessonsService.create(createLessonDto);
+  create(@Body() createOneLessonDto: CreateOneLessonDto) {
+    return this.lessonsService.create(createOneLessonDto);
   }
 
   /*@Get()

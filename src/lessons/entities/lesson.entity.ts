@@ -16,7 +16,7 @@ export class Lesson {
     title!:string;
 
     @ManyToOne(() => Section, (section) => section.lessons, {onDelete:'CASCADE'} )
-        unit!:string;
+        unit!:Section;
 
     @OneToMany(() => Task, (tasks) => tasks.lesson_task, {cascade:true})
     tasks!:Task[];

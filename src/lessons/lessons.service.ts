@@ -1,25 +1,45 @@
 import { Lesson } from './entities/lesson.entity';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { isUUID } from 'class-validator';
+import { CreateOneLessonDto } from './dto/create-one-lesson.dto';
+import { Section } from 'src/sections/entities/section.entity';
 
 @Injectable()
 export class LessonsService {
 
   constructor(
     @InjectRepository(Lesson)
-    private readonly lessonRepository:Repository<Lesson>
+    private readonly lessonRepository:Repository<Lesson>,
+    @InjectRepository(Section)
+    private readonly sectionRepository:Repository<Section>
   ){
 
   }
 
-  create(createLessonDto: CreateLessonDto) {
-    this.lessonRepository.save(createLessonDto);
+  async create(createOneLessonDto: CreateOneLessonDto) {
 
-    return {createLessonDto};
+    // Búsqueda por sección 
+    console.log("aqui")
+    const section = await this.sectionRepository.findOneBy({id: createOneLessonDto.unit})
+    if(!section){
+      throw new NotFoundException(`Section of the lesson not found, id ${createOneLessonDto.unit}`)
+    }
+
+    // Create para que no se guarde como dto
+
+    const newLesson = this.lessonRepository.create({
+      title: createOneLessonDto.title,
+      unit: section
+    });
+    console.log("aqui")
+
+ 
+
+    return await this.lessonRepository.save(newLesson);
   }
 
   /*findAll() {

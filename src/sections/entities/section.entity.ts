@@ -19,7 +19,7 @@ export class Section {
     order !: number;*/
 
     @ManyToOne(() => Project, (project) => project.units )
-    project!:string;
+    project!:Project;
 
     @OneToMany( () => Lesson, (lesson) => lesson.unit, {cascade:true, onDelete:"CASCADE", eager:true})
         lessons ?: Lesson[];
