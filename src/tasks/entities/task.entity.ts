@@ -1,6 +1,7 @@
 import { User } from "src/auth/entities/user.entity";
 import { Lesson } from "src/lessons/entities/lesson.entity";
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { SubmitTask } from "src/submit-task/entities/submit-task.entity";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("tasks")
 export class Task {
@@ -11,19 +12,19 @@ export class Task {
     @ManyToOne(() => User, (user) => user.tasks_created )
     user_author!:User;
 
-    @ManyToOne(() => User, (user) => user.tasks )
-    user_task!:User;
-
-
-    url_file?:string;
-
+    @Column()
     title!: string;
+    @Column()
+    description!: string;
 
-    grade!: string|number;
+    
     // status:string; enum o boolean
 
     @ManyToOne(()=> Lesson, (lesson) => lesson.tasks)
     lesson_task!:Lesson;
+
+    @OneToMany(() => SubmitTask, sub => sub.task)
+    submissions!: SubmitTask[];
     
 
 }
