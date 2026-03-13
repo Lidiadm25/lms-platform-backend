@@ -1,5 +1,5 @@
 import { User } from "src/auth/entities/user.entity";
-import { Lesson } from "src/lessons/entities/lesson.entity";
+import { Lesson } from "src/lesson/entities/lesson.entity";
 import { SubmitTask } from "src/submit-task/entities/submit-task.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -25,6 +25,16 @@ export class Task {
 
     @OneToMany(() => SubmitTask, (sub) => sub.task)
     submissions!: SubmitTask[];
+
+    task_created!:Date;
+
+    task_open!:Date;
+
+    task_closed !:Date;
+
+    active!:Boolean;
+
+
     
 
 }

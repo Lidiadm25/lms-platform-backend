@@ -5,6 +5,7 @@ import { Task } from "src/tasks/entities/task.entity";
 import { Survey } from "src/survey/entities/survey.entity";
 import { UserProject } from "src/user-projects/entities/user-project.entity";
 import { Project } from "src/project/entities/project.entity";
+import { Grade } from "src/grade/entities/grade.entity";
 
 
 @Entity('users')
@@ -41,11 +42,17 @@ export class User {
     @OneToMany( () => Task, (task) => task.user_author)
     tasks !: Task[];
 
-    @OneToMany( () => Task, (task) => task.user_task)
+    @OneToMany( () => Task, (task) => task.user_author)
     tasks_created !: Task[];
 
     @OneToMany(() => Survey, (survey) => survey.user_author)
     surveys!: Survey[];
+
+    @OneToMany(() => Grade, (grade) => grade.teacher)
+    grades_put!: Grade[];
+
+    @OneToMany(() => Grade, (grade) => grade.student)
+    grades_received!: Grade[];
 
     @OneToMany(()=> UserProject, (userProject) => userProject.user)
     userProjects !: UserProject[];
