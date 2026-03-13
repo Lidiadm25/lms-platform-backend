@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSubmitTaskDto } from './dto/create-submit-task.dto';
 import { UpdateSubmitTaskDto } from './dto/update-submit-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -40,15 +40,42 @@ export class SubmitTaskService {
     return `This action returns all submitTask`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} submitTask`;
+  async findOne(id: string) {
+
+    const submit = await this.submitRepository.findOneBy({id:id});
+
+    if(!submit){
+      throw new NotFoundException(`The submit of the task was not found`)
+    }
+
+
+
+    return submit;
   }
 
-  update(id: number, updateSubmitTaskDto: UpdateSubmitTaskDto) {
-    return `This action updates a #${id} submitTask`;
+  async update(id: string, updateSubmitTaskDto: UpdateSubmitTaskDto) {
+
+    console.log(updateSubmitTaskDto.file_url)
+
+    const submit =await this.findOne(id);
+    if(updateSubmitTaskDto.id && updateSubmitTaskDto.id!== id){
+      throw new BadRequestException(`Submit task id not valid`)
+    }
+
+    if(!submit) {
+      throw new NotFoundException(`The submit was not found`)
+    }
+
+    const updated = await this.submitRepository.merge(submit, updateSubmitTaskDto);
+    
+    return await this.submitRepository.save(updated)
+
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} submitTask`;
+  async remove(id: string) {
+
+    const submit = await this.findOne(id);
+
+    await this.submitRepository.remove(submit);
   }
 }

@@ -1,7 +1,8 @@
+import { IsDate } from 'class-validator';
 import { User } from "src/auth/entities/user.entity";
 import { Grade } from "src/grade/entities/grade.entity";
 import { Task } from "src/tasks/entities/task.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("submit")
 export class SubmitTask {
@@ -24,9 +25,17 @@ export class SubmitTask {
 
     @Column("date" , {nullable:true})
     date_send!:Date;
+
+    /*
     @Column("int")
     left_time!:number;
+    */
 
+    @BeforeInsert()
+    @BeforeUpdate()
+    updateDates() {
+        this.date_send = new Date()
+    }
 
 
 }

@@ -28,16 +28,16 @@ export class SubmitTaskController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.submitTaskService.findOne(+id);
+    return this.submitTaskService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSubmitTaskDto: UpdateSubmitTaskDto) {
-    return this.submitTaskService.update(+id, updateSubmitTaskDto);
+    return this.submitTaskService.update(id, updateSubmitTaskDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.submitTaskService.remove(+id);
+    return this.submitTaskService.remove(id);
   }
 }
