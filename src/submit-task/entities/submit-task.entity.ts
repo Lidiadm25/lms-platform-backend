@@ -19,7 +19,7 @@ export class SubmitTask {
     @JoinColumn() // owns the relationship
     grade!:Grade;
 
-    @ManyToOne( () => Task, (task) => task.submissions)
+    @ManyToOne( () => Task, (task) => task.submissions, {onDelete:"CASCADE"})
     task!: Task;
 
 

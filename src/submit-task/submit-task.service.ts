@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateSubmitTaskDto } from './dto/create-submit-task.dto';
 import { UpdateSubmitTaskDto } from './dto/update-submit-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,6 +25,10 @@ export class SubmitTaskService {
 
     if(!task){
       throw new NotFoundException(`Task to submit not found with id ${createSubmitTaskDto.taskId}`)
+    }
+
+    if(task.getActive() == false) {
+      throw new UnauthorizedException(`Task out of date`)
     }
 
     const newSubmit = this.submitRepository.create({
