@@ -15,11 +15,11 @@ export class SubmitTask {
     @Column()
     url_file?:string;
 
-    @OneToOne(() => Grade, (grade) => grade.taskSubmitted)
+    @OneToOne(() => Grade, (grade) => grade.taskSubmitted, {cascade: true, eager:true})
+    @JoinColumn() // owns the relationship
     grade!:Grade;
 
     @ManyToOne( () => Task, (task) => task.submissions)
-    @JoinColumn()
     task!: Task;
 
 
