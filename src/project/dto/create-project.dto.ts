@@ -1,8 +1,8 @@
 import { Type } from "class-transformer";
 import { ArrayMinSize, IsArray, IsNotEmpty, IsOptional, IsString, MinLength, ValidateNested } from "class-validator";
 import { User } from "src/auth/entities/user.entity";
-import { CreateSectionDto } from "src/sections/dto/create-section.dto";
-import { Section } from "src/sections/entities/section.entity";
+import { CreateSectionDto } from "src/section/dto/create-section.dto";
+import { Section } from "src/section/entities/section.entity";
 
 
 export class CreateProjectDto {

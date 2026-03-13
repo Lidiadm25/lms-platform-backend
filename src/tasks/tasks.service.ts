@@ -5,7 +5,7 @@ import { User } from 'src/auth/entities/user.entity';
 import { Task } from './entities/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Lesson } from 'src/lessons/entities/lesson.entity';
+import { Lesson } from 'src/lesson/entities/lesson.entity';
 
 @Injectable()
 export class TasksService {
@@ -28,7 +28,8 @@ export class TasksService {
 
     const newTask = this.taskRepository.create({
      ...createTaskDto,
-     user_author: user
+     user_author: user,
+     lesson_task: lesson
 
     })
 

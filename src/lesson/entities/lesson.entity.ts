@@ -1,5 +1,5 @@
 import { InjectRepository } from "@nestjs/typeorm";
-import { Section } from "src/sections/entities/section.entity";
+import { Section } from "src/section/entities/section.entity";
 import { Task } from "src/tasks/entities/task.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 

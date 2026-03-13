@@ -2,7 +2,6 @@ import { Project } from 'src/project/entities/project.entity';
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
-import { User } from 'src/auth/entities/user.entity';
 import { Not, Repository } from 'typeorm';
 import { Section } from './entities/section.entity';
 import { InjectRepository } from '@nestjs/typeorm';

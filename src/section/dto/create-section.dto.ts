@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import { IsArray, IsNotEmpty, IsOptional, IsString, MinLength, ValidateNested } from "class-validator";
-import { CreateLessonDto } from "src/lessons/dto/create-lesson.dto";
+import { CreateLessonDto } from "src/lesson/dto/create-lesson.dto";
 
 export class CreateSectionDto {
     @IsString()

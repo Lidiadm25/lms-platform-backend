@@ -1,5 +1,5 @@
 import { IsOptional, IsString, IsUUID } from "class-validator";
-import { Section } from "src/sections/entities/section.entity";
+import { Section } from "src/section/entities/section.entity";
 
 export class CreateOneLessonDto {
 

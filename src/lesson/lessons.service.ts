@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { isUUID } from 'class-validator';
 import { CreateOneLessonDto } from './dto/create-one-lesson.dto';
-import { Section } from 'src/sections/entities/section.entity';
+import { Section } from 'src/section/entities/section.entity';
 
 @Injectable()
 export class LessonsService {

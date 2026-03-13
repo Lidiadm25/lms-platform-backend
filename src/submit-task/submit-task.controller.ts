@@ -1,16 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
 import { SubmitTaskService } from './submit-task.service';
 import { CreateSubmitTaskDto } from './dto/create-submit-task.dto';
 import { UpdateSubmitTaskDto } from './dto/update-submit-task.dto';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
+import { RoleProtected } from 'src/auth/decorators/role-protected.decorator';
+import { ValidRoles } from 'src/auth/interfaces/validRoles';
+import { UserRoleGuard } from 'src/auth/guards/user-role/user-role.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('submit-task')
 export class SubmitTaskController {
   constructor(private readonly submitTaskService: SubmitTaskService) {}
 
   @Post()
-  create(@Body() createSubmitTaskDto: CreateSubmitTaskDto, @GetUser() user: User) {
+  @RoleProtected( ValidRoles.admin, ValidRoles.user)
+  @UseGuards( AuthGuard(), UserRoleGuard )
+  create(@Body() createSubmitTaskDto: CreateSubmitTaskDto,
+  @GetUser() user: User) {
     return this.submitTaskService.create(createSubmitTaskDto, user);
   }
 
