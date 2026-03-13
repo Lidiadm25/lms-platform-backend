@@ -28,7 +28,7 @@ export class SubmitTaskService {
     }
 
     const newSubmit = this.submitRepository.create({
-      url_file: createSubmitTaskDto.file_url,
+      url_file: createSubmitTaskDto.url_file,
       task: task,
       student: user,
     })
@@ -55,7 +55,7 @@ export class SubmitTaskService {
 
   async update(id: string, updateSubmitTaskDto: UpdateSubmitTaskDto) {
 
-    console.log(updateSubmitTaskDto.file_url)
+    console.log(updateSubmitTaskDto.url_file)
 
     const submit =await this.findOne(id);
     if(updateSubmitTaskDto.id && updateSubmitTaskDto.id!== id){

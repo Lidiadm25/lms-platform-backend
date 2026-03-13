@@ -4,7 +4,7 @@ export class CreateSubmitTaskDto {
 @IsString()
 @IsNotEmpty()
 //@ IsUrl()
-file_url !: string;
+url_file !: string;
 
 @IsString()
 @IsNotEmpty()
