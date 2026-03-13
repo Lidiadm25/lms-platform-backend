@@ -19,6 +19,7 @@ export class GradeService {
 
   ){}
 
+    
   async create(createGradeDto: CreateGradeDto, user:User) {
     let task : SubmitTask | null;
     // Search for the task submitted
@@ -47,11 +48,31 @@ export class GradeService {
     return {grade};
   }
 
-  findAll() {
-    return `This action returns all grade`;
+  async findAllProject(idProject: string, user:User) {
+    const grades= await this.gradeRepository.find({
+      relations : {
+        project: true,
+        student: true
+      },
+      where: {
+        project: {
+          id: idProject
+        },
+        student: {
+          id: user.id
+        }
+      }
+    })
+
+    if(!grades || grades.length == 0) {
+      throw new NotFoundException(`Couldn't find any grades`)
+    }
+
+    return {grades};
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
+
     return `This action returns a #${id} grade`;
   }
 

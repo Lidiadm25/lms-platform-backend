@@ -20,14 +20,20 @@ export class GradeController {
     return this.gradeService.create(createGradeDto, user);
   }
 
-  @Get()
+  /* @Get()
   findAll() {
     return this.gradeService.findAll();
   }
+ */
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.gradeService.findOne(+id);
+  /*
+    All the grades from an user and a specific project
+  */
+  @Get(':idProject')
+  @Auth(ValidRoles.user)
+  @UseGuards(AuthGuard())
+  findOne(@Param('idProject') id: string, @GetUser() user:User) {
+    return this.gradeService.findAllProject(id, user);
   }
 
   @Patch(':id')
