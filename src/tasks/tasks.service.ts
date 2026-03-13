@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { User } from 'src/auth/entities/user.entity';
@@ -44,8 +44,21 @@ export class TasksService {
     return `This action returns a #${id} task`;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(id: string, updateTaskDto: UpdateTaskDto) {
+
+    if(updateTaskDto.id && updateTaskDto.id !== id){
+      throw new BadRequestException(`The task id is not valid`)
+    }
+
+    const task = await this.taskRepository.findOneBy({id: id})
+
+    if(!task){
+      throw new NotFoundException(`Task to update was not found`)
+    }
+
+    const updated = await this.taskRepository.merge(task, updateTaskDto);
+
+    return await this.taskRepository.save(updated);
   }
 
   remove(id: number) {
