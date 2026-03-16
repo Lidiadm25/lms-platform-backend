@@ -12,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class GradeController {
   constructor(private readonly gradeService: GradeService) {}
 
+  
   @Post()
   @Auth(ValidRoles.admin)
   @UseGuards(AuthGuard())
@@ -27,7 +28,7 @@ export class GradeController {
  */
 
   /*
-    All the grades from an user and a specific project
+    All the grades from current user and a specific project
   */
   @Get(':idProject')
   @Auth(ValidRoles.user)
@@ -38,11 +39,11 @@ export class GradeController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateGradeDto: UpdateGradeDto) {
-    return this.gradeService.update(+id, updateGradeDto);
+    return this.gradeService.update(id, updateGradeDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.gradeService.remove(+id);
+    return this.gradeService.remove(id);
   }
 }
