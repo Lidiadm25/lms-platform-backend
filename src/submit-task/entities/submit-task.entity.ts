@@ -15,8 +15,7 @@ export class SubmitTask {
     @Column()
     url_file?:string;
 
-    @OneToOne(() => Grade, (grade) => grade.taskSubmitted, {cascade: true, eager:true})
-    @JoinColumn() // owns the relationship
+    @OneToOne(() => Grade, (grade) => grade.taskSubmitted)
     grade!:Grade;
 
     @ManyToOne( () => Task, (task) => task.submissions, {onDelete:"CASCADE"})
