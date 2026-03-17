@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserDtoProject } from './dtos/create-user-projects.dto';
 import { Project } from 'src/project/entities/project.entity';
 import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class UserProjectsService {
@@ -16,6 +17,41 @@ export class UserProjectsService {
         private readonly projectRepository:Repository<Project>
     ) {
         
+    }
+
+    async getAllPerProject(id: string){
+        // Search that the project exists
+        console.log("parametro: " + id)
+        const project = await this.projectRepository.findOneBy({id: id});
+        
+        if(!project){
+            throw new NotFoundException(`Project not found`)
+        }
+        
+        const users = await this.userProjectRepository.find({
+            select: {
+                user: {
+                    fullName: true,
+                    email: true,
+                },
+                project: {
+                    title: true
+                }
+            },
+            relations: {
+                user: true,
+                project: true
+            },
+            where: {project: {
+                id: id,
+            }}
+        });
+         console.log(users)
+        if(!users) {
+            throw new NotFoundException('no data found')
+        }
+
+        return users;
     }
 
 

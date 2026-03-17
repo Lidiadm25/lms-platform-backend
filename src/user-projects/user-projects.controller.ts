@@ -1,4 +1,4 @@
-import { Body, Controller, Injectable, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Injectable, Param, Patch, Post, Query } from '@nestjs/common';
 import { UserProjectsService } from './user-projects.service';
 import { UserDtoProject } from './dtos/create-user-projects.dto';
 import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
@@ -10,6 +10,11 @@ export class UserProjectsController {
 
     ){
 
+    }
+
+    @Get(':id')
+    getAll(@Param('id') id: string){
+        return this.service.getAllPerProject(id);
     }
 
     @Post()
