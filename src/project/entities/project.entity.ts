@@ -3,7 +3,7 @@ import { Grade } from "src/grade/entities/grade.entity";
 import { Section } from "src/section/entities/section.entity";
 import { Survey } from "src/survey/entities/survey.entity";
 import { UserProject } from "src/user-projects/entities/user-project.entity";
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { AfterInsert, AfterUpdate, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("projects")
 export class Project {
@@ -30,9 +30,10 @@ export class Project {
     survey?:Survey;
 
     @OneToMany(()=> UserProject, (userProject) => userProject.project, {cascade:true})
-    userProjects !: UserProject[];
+    students !: UserProject[];
 
     @OneToMany(() => Grade, grades => grades.project)
     grades !: Grade[];
+
    
 }

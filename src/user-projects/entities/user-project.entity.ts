@@ -12,9 +12,8 @@ export class UserProject {
     @ManyToOne (() => User, (users) => users.userProjects,{onDelete: "CASCADE"})
     user!:User;
 
-    @ManyToOne(()=> Project, (project) => project.userProjects,{onDelete: "CASCADE"})
+    @ManyToOne(()=> Project, (project) => project.students ,{onDelete: "CASCADE"})
     project!: Project;
- 
  
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     start_date !: string;

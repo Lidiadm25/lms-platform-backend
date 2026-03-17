@@ -45,11 +45,23 @@ export class ProjectService {
       take: limit,
       skip: offset,
       relations:{
-        units: true
+        units: true,
+        students: true
       }
      })
+     
+     const totalProjects = await this.projectRepository.count({})
 
-     return projects;
+     const projectsWithStudents = projects.map(project => ({
+      ...project,
+      studentsCount: project.students.length
+     }))
+     
+     return {
+      count: totalProjects,
+      pages: Math.ceil(totalProjects/ limit),
+      projectsWithStudents
+    };
      
 
     
