@@ -21,9 +21,11 @@ export class ProjectController {
     return this.projectService.create(createProjectDto, user);
   }
 
+
   @Get()
-  findAll(@Query() paginationDto:PaginationDto) {
-    return this.projectService.findAll(paginationDto);
+  @Auth(ValidRoles.admin, ValidRoles.user)
+  findAll(@Query() paginationDto:PaginationDto, @GetUser() user: User) {
+    return this.projectService.findAll(paginationDto, user);
   }
 
   @Get(':id')

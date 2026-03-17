@@ -13,6 +13,7 @@ import { Repository } from 'typeorm';
 import { User } from 'src/auth/entities/user.entity';
 import { isUUID } from 'class-validator';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { ValidRoles } from 'src/auth/interfaces/validRoles';
 
 @Injectable()
 export class ProjectService {
@@ -37,34 +38,56 @@ export class ProjectService {
   }
 
   // Returns all projects
-  async findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto, user: User) {
+    // default values for pagination
+    const { limit = 10, offset = 0 } = paginationDto;
+    let projects: Project[] | undefined;
+    let totalProjects: number = 0;
 
-     const { limit = 10, offset = 0 } = paginationDto;
+    // All projects
+    if (user.roles.includes(ValidRoles.user)) {
+      projects = await this.projectRepository.find({
+        take: limit,
+        skip: offset,
+        relations: {
+          units: true,
+          students: true,
+        },
+      });
 
-     const projects = await this.projectRepository.find({
-      take: limit,
-      skip: offset,
-      relations:{
-        units: true,
-        students: true
-      }
-     })
+      totalProjects = await this.projectRepository.count({});
+    } else {
+      // Projects only admin created
+      projects = await this.projectRepository.find({
+        take: limit,
+        skip: offset,
+        relations: {
+          units: true,
+          students: true,
+          author: true,
+        },
+        where: {
+          author: {
+            id: user.id,
+          },
+        },
+      });
+      totalProjects = await this.projectRepository.count({});
+    }
+     console.log({projects})
+    if (projects) {
      
-     const totalProjects = await this.projectRepository.count({})
+      const projectsWithStudents = projects.map((project) => ({
+        ...project,
+        studentsCount: project.students.length,
+      }));
 
-     const projectsWithStudents = projects.map(project => ({
-      ...project,
-      studentsCount: project.students.length
-     }))
-     
-     return {
-      count: totalProjects,
-      pages: Math.ceil(totalProjects/ limit),
-      projectsWithStudents
-    };
-     
-
-    
+      return {
+        count: totalProjects,
+        pages: Math.ceil(totalProjects / limit),
+        projectsWithStudents
+      };
+    }
   }
 
   // Returns a project by uuid and its sections/lessons
@@ -88,27 +111,28 @@ export class ProjectService {
   }
 
   async update(id: string, updateProjectDto: UpdateProjectDto) {
-
-    if(updateProjectDto.id && updateProjectDto.id!== id) {
-      throw new BadRequestException(`Project ID is not valid`)
+    if (updateProjectDto.id && updateProjectDto.id !== id) {
+      throw new BadRequestException(`Project ID is not valid`);
     }
 
-    const project = await this.projectRepository.findOneBy({id: id});
+    const project = await this.projectRepository.findOneBy({ id: id });
 
-    if(!project){
-      throw new NotFoundException(`Project with id ${id} not found`)
+    if (!project) {
+      throw new NotFoundException(`Project with id ${id} not found`);
     }
 
-    const updated = await this.projectRepository.merge(project,updateProjectDto)
+    const updated = await this.projectRepository.merge(
+      project,
+      updateProjectDto,
+    );
 
     return await this.projectRepository.save(updated);
   }
 
- async remove(id: string) {
-
+  async remove(id: string) {
     const project = await this.findOne(id);
     await this.projectRepository.remove(project);
-    return `Removed successfully`
+    return `Removed successfully`;
   }
 
   private handleDBExceptions(error: any) {
