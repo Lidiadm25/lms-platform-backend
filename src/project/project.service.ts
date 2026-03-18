@@ -37,30 +37,59 @@ export class ProjectService {
     }
   }
 
+  async findFiltered(paginationDto: PaginationDto, query:string){
+   query = "%" + query + "%";
+   const projects = await this.projectRepository.createQueryBuilder('projects')
+    .where("title like :query", {query})
+    .getMany();
+
+    if(!projects){
+      throw new NotFoundException(`No project found`)
+    }
+
+    if(paginationDto.limit == undefined) {
+        paginationDto.limit=10;
+      }
+    const totalProjects = projects.length; 
+      return {
+        count: totalProjects,
+        pages: Math.ceil(totalProjects / paginationDto.limit),
+        projects
+      };
+
+
+  return {projects}
+  }
+
   // Returns all projects
   async findAll(paginationDto: PaginationDto, user: User) {
-    // default values for pagination
-    const { limit = 10, offset = 0 } = paginationDto;
     let projects: Project[] | undefined;
     let totalProjects: number = 0;
-
     // All projects
     if (user.roles.includes(ValidRoles.user)) {
-      projects = await this.projectRepository.find({
-        take: limit,
-        skip: offset,
-        relations: {
-          units: true,
-          students: true,
-        },
-      });
+       let query = await this.projectRepository.createQueryBuilder('projects')
+       .leftJoinAndSelect("projects.units", "units")
+       .leftJoinAndSelect("projects.students", "students")
+       .leftJoinAndSelect("projects.author", "author")
+       .leftJoinAndSelect("projects.category", "category")
+       .where("1=1");
 
+       
+       if(paginationDto.category !== undefined && paginationDto.category.length!=0) {
+        query.andWhere('category.name = :name', {name: paginationDto.category})
+       }
+
+       try {
+         projects = await query.getMany();
+       } catch (error) {
+          throw error;
+       }
       totalProjects = await this.projectRepository.count({});
     } else {
       // Projects only admin created
       projects = await this.projectRepository.find({
-        take: limit,
-        skip: offset,
+        take: paginationDto.limit,
+        skip: paginationDto.offset,
         relations: {
           units: true,
           students: true,
@@ -74,17 +103,20 @@ export class ProjectService {
       });
       totalProjects = await this.projectRepository.count({});
     }
-     console.log({projects})
+    
     if (projects) {
      
       const projectsWithStudents = projects.map((project) => ({
         ...project,
         studentsCount: project.students.length,
-      }));
+      }));  
+      if(paginationDto.limit == undefined) {
+        paginationDto.limit=10;
+      }
 
       return {
         count: totalProjects,
-        pages: Math.ceil(totalProjects / limit),
+        pages: Math.ceil(totalProjects / paginationDto.limit),
         projectsWithStudents
       };
     }

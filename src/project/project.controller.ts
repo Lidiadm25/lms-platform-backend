@@ -28,6 +28,11 @@ export class ProjectController {
     return this.projectService.findAll(paginationDto, user);
   }
 
+  @Get('search/:query')
+  searchByQuery(@Query() paginationDto:PaginationDto,@Param('query') query: string){
+    return this.projectService.findFiltered(paginationDto,query);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.projectService.findOne(id);
