@@ -1,6 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsOptional, IsPositive, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Category } from 'src/category/entities/category.entity';
+import { CreateCategoryDto } from 'src/category/dto/create-category.dto';
 
 
 export class PaginationDto {
@@ -22,5 +24,8 @@ export class PaginationDto {
     @Min(0)
     @Type( () => Number ) // enableImplicitConversions: true
     offset?: number;
+
+    @IsOptional()
+    category!:string;
 
 }

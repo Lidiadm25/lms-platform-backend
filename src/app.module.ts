@@ -16,6 +16,7 @@ import { UsersProjectsModule } from './user-projects/users-projects.module';
 import { ProjectModule } from './project/project.module';
 import { SubmitTaskModule } from './submit-task/submit-task.module';
 import { GradeModule } from './grade/grade.module';
+import { CategoryModule } from './category/category.module';
 
 
 
@@ -46,6 +47,7 @@ import { GradeModule } from './grade/grade.module';
     AuthModule,
     SubmitTaskModule,
     GradeModule,
+    CategoryModule,
     
 
     
