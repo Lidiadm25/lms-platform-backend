@@ -2,6 +2,7 @@ import { Body, Controller, Get, Injectable, Param, Patch, Post, Query } from '@n
 import { UserProjectsService } from './user-projects.service';
 import { UserDtoProject } from './dtos/create-user-projects.dto';
 import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Controller('user-projects')
 export class UserProjectsController {
@@ -13,8 +14,8 @@ export class UserProjectsController {
     }
 
     @Get(':id')
-    getAll(@Param('id') id: string){
-        return this.service.getAllPerProject(id);
+    getAll(@Param('id') id: string, @Query() paginationDto:PaginationDto){
+        return this.service.getAllPerProject(id, paginationDto);
     }
 
     @Post()
