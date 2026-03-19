@@ -1,4 +1,5 @@
-import { IsEmail, IsString, MinLength } from "class-validator";
+import { IsEmail, IsOptional, IsString, MinLength } from "class-validator";
+import { ValidRoles } from "../interfaces/validRoles";
 
 export class CreateUserDto{
     @IsString()
@@ -11,4 +12,7 @@ export class CreateUserDto{
     @IsString()
     @MinLength(1)
     fullName!:string;
+    @IsString()
+    @IsOptional()
+    role!:ValidRoles;
 }
