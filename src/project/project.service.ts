@@ -57,13 +57,11 @@ export class ProjectService {
         projects
       };
 
-
-  return {projects}
   }
 
   // Returns all projects
   async findAll(paginationDto: PaginationDto, user: User) {
-    let projects: Project[] | undefined;
+    let projectsQuery: Project[] | undefined;
     let totalProjects: number = 0;
     // All projects
     if (user.roles.includes(ValidRoles.user)) {
@@ -80,14 +78,14 @@ export class ProjectService {
        }
 
        try {
-         projects = await query.getMany();
+         projectsQuery = await query.getMany();
        } catch (error) {
           throw error;
        }
       totalProjects = await this.projectRepository.count({});
     } else {
       // Projects only admin created
-      projects = await this.projectRepository.find({
+      projectsQuery = await this.projectRepository.find({
         take: paginationDto.limit,
         skip: paginationDto.offset,
         relations: {
@@ -104,9 +102,9 @@ export class ProjectService {
       totalProjects = await this.projectRepository.count({});
     }
     
-    if (projects) {
+    if (projectsQuery) {
      
-      const projectsWithStudents = projects.map((project) => ({
+      const projects = projectsQuery.map((project) => ({
         ...project,
         studentsCount: project.students.length,
       }));  
@@ -117,7 +115,7 @@ export class ProjectService {
       return {
         count: totalProjects,
         pages: Math.ceil(totalProjects / paginationDto.limit),
-        projectsWithStudents
+        projects
       };
     }
   }
