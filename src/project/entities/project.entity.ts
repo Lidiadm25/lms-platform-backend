@@ -18,7 +18,7 @@ export class Project {
     @ManyToOne(() => User, (user) => user.projects)
     author?:User;
 
-    @Column({type: "varchar"}) // placeholder
+    @Column({type: "varchar", default:''}) // placeholder
     image!:string;
 
     @Column({ type : "varchar", nullable: false, length: 100})

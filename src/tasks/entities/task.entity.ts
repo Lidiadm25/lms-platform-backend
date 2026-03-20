@@ -20,10 +20,10 @@ export class Task {
     
     // status:string; enum o boolean
 
-    @ManyToOne(()=> Lesson, (lesson) => lesson.tasks)
+    @ManyToOne(()=> Lesson, (lesson) => lesson.tasks, {onDelete:"CASCADE"})
     lesson_task!:Lesson;
 
-    @OneToMany(() => SubmitTask, (sub) => sub.task)
+    @OneToMany(() => SubmitTask, (sub) => sub.task, {cascade:true})
     submissions!: SubmitTask[];
 
     @Column("datetime", {nullable:true})
@@ -48,6 +48,10 @@ export class Task {
 
     
     getActive(): boolean{
+        if(this.task_close==null){
+            return true;
+        }
+
         if(new Date().getDate == this.task_close.getDate){
             return false;
         }

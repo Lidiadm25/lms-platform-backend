@@ -4,6 +4,12 @@ import { Observable } from 'rxjs';
 import { META_ROLES } from 'src/auth/decorators/role-protected.decorator';
 
 @Injectable()
+
+/**
+ * Guard for the roles of entity Users
+ * 
+ * Gets the metadata (Values of validRoles) from the reflector and uses it to compare to the role needed in the request
+ */
 export class UserRoleGuard implements CanActivate {
 
   constructor

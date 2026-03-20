@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserProjectsController } from './user-projects.controller';
 import { UserProjectsService } from './user-projects.service';
 import { ProjectModule } from 'src/project/project.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 
 @Module({
@@ -12,7 +13,8 @@ import { ProjectModule } from 'src/project/project.module';
   providers: [UserProjectsService],
    imports:[
     TypeOrmModule.forFeature([ UserProject ]),
-    ProjectModule
+    ProjectModule,
+    AuthModule
   ]
 })
 export class UsersProjectsModule {}

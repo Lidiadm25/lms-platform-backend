@@ -11,6 +11,7 @@ import { Project } from 'src/project/entities/project.entity';
 import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
 import { throwError } from 'rxjs';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class UserProjectsService {
@@ -50,7 +51,7 @@ export class UserProjectsService {
 
   async create(dto: UserDtoProject) {
     // Verificate its not already asigned
-
+    console.log("entra")
     const inscription = await this.userProjectRepository.findOneBy({
       user: { id: dto.userId },
       project: { id: dto.projectId },

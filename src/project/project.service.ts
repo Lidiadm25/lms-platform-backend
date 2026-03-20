@@ -85,6 +85,9 @@ export class ProjectService {
       totalProjects = await this.projectRepository.count({});
     } else {
       // Projects only admin created
+      if(!paginationDto.limit){
+        paginationDto.limit=9;
+      }
       projectsQuery = await this.projectRepository.find({
         take: paginationDto.limit,
         skip: paginationDto.offset,
