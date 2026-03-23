@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -14,9 +24,13 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  @RoleProtected( ValidRoles.admin)
-  @UseGuards( AuthGuard(), UserRoleGuard )
-  create(@Body() createTaskDto: CreateTaskDto, @Req() request: Request ,@GetUser() user:User) {
+  @RoleProtected(ValidRoles.admin)
+  @UseGuards(AuthGuard(), UserRoleGuard)
+  create(
+    @Body() createTaskDto: CreateTaskDto,
+    @Req() request: Request,
+    @GetUser() user: User,
+  ) {
     return this.tasksService.create(createTaskDto, user);
   }
 

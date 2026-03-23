@@ -11,13 +11,11 @@ import { PassportModule } from '@nestjs/passport';
 @Module({
   controllers: [TasksController],
   providers: [TasksService],
-  imports:[
-    TypeOrmModule.forFeature([ Task]),
+  imports: [
+    TypeOrmModule.forFeature([Task]),
     LessonsModule,
-     PassportModule.register({ defaultStrategy: 'jwt' }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
-  exports: [
-    TypeOrmModule
-  ]
+  exports: [TypeOrmModule],
 })
 export class TasksModule {}

@@ -1,32 +1,40 @@
-import { getRepositoryToken, InjectRepository } from "@nestjs/typeorm";
-import { Lesson } from "src/lesson/entities/lesson.entity";
-import { Project } from "src/project/entities/project.entity";
+import { getRepositoryToken, InjectRepository } from '@nestjs/typeorm';
+import { Lesson } from 'src/lesson/entities/lesson.entity';
+import { Project } from 'src/project/entities/project.entity';
 
-import { BeforeInsert, Column, Entity, Generated, getRepository, ManyToOne, OneToMany, PrimaryGeneratedColumn, Repository } from "typeorm";
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  Generated,
+  getRepository,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Repository,
+} from 'typeorm';
 
-@Entity("sections")
+@Entity('sections')
 export class Section {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
-    @PrimaryGeneratedColumn('uuid')
-    id!:string;
-    
-    @Column({ type : "varchar", nullable: false, length: "50"})
-    title!:string;
-    @Column({ type : "varchar", nullable: false, length: "50"})
-    description!: string;
+  @Column({ type: 'varchar', nullable: false, length: '50' })
+  title!: string;
+  @Column({ type: 'varchar', nullable: false, length: '50' })
+  description!: string;
 
-    /*@Column({type: "int"})
+  /*@Column({type: "int"})
     order !: number;*/
 
-    @ManyToOne(() => Project, (project) => project.units, {onDelete:"CASCADE"} )
-    project!:Project;
+  @ManyToOne(() => Project, (project) => project.units, { onDelete: 'CASCADE' })
+  project!: Project;
 
-    // Eager true aquí hace que se carguen automáticamente!!!!!!
-    @OneToMany( () => Lesson, (lesson) => lesson.unit, {cascade:true})
-        lessons ?: Lesson[];
+  // Eager true aquí hace que se carguen automáticamente!!!!!!
+  @OneToMany(() => Lesson, (lesson) => lesson.unit, { cascade: true })
+  lessons?: Lesson[];
 
-
-    /* @BeforeInsert()
+  /* @BeforeInsert()
     async generarNumero() {
     const ultimo = await getRepository(Section)
       .createQueryBuilder("section")
@@ -37,6 +45,3 @@ export class Section {
   }
   */
 }
-
-
-

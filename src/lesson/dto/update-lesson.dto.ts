@@ -3,13 +3,12 @@ import { CreateLessonDto } from './create-lesson.dto';
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class UpdateLessonDto extends PartialType(CreateLessonDto) {
+  @IsUUID()
+  @IsString()
+  @IsOptional()
+  readonly id?: string;
 
-    @IsUUID()
-    @IsString()
-    @IsOptional()
-    readonly id?:string;
-
-    @IsString()
-    @IsOptional()
-    title?:string;
+  @IsString()
+  @IsOptional()
+  title?: string;
 }

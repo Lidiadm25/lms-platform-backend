@@ -60,7 +60,7 @@ export class AuthService {
     }
 
     return {
-      user: {...user},
+      user: { ...user },
       token: this.getJtwToken({ id: user.id }),
     };
   }

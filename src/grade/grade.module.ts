@@ -9,10 +9,10 @@ import { SubmitTask } from 'src/submit-task/entities/submit-task.entity';
 @Module({
   controllers: [GradeController],
   providers: [GradeService],
-  imports:[
-    TypeOrmModule.forFeature([ Grade, SubmitTask ]),
-     PassportModule.register({ defaultStrategy: 'jwt' }),
+  imports: [
+    TypeOrmModule.forFeature([Grade, SubmitTask]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
-  exports: [TypeOrmModule]
+  exports: [TypeOrmModule],
 })
 export class GradeModule {}

@@ -9,11 +9,7 @@ import { ProjectModule } from 'src/project/project.module';
 @Module({
   controllers: [SectionsController],
   providers: [SectionsService],
-  imports: [
-    TypeOrmModule.forFeature([ Section ]),
-     AuthModule,
-     ProjectModule
-  ],
-  exports:[TypeOrmModule]
+  imports: [TypeOrmModule.forFeature([Section]), AuthModule, ProjectModule],
+  exports: [TypeOrmModule],
 })
 export class SectionsModule {}

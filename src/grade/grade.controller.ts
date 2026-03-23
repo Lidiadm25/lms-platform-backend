@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { GradeService } from './grade.service';
 import { CreateGradeDto } from './dto/create-grade.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
@@ -12,12 +21,10 @@ import { AuthGuard } from '@nestjs/passport';
 export class GradeController {
   constructor(private readonly gradeService: GradeService) {}
 
-  
   @Post()
   @Auth(ValidRoles.admin)
   @UseGuards(AuthGuard())
-  create(@Body() createGradeDto: CreateGradeDto, @GetUser() user:User) {
-
+  create(@Body() createGradeDto: CreateGradeDto, @GetUser() user: User) {
     return this.gradeService.create(createGradeDto, user);
   }
 
@@ -33,7 +40,7 @@ export class GradeController {
   @Get(':idProject')
   @Auth(ValidRoles.user)
   @UseGuards(AuthGuard())
-  findOne(@Param('idProject') id: string, @GetUser() user:User) {
+  findOne(@Param('idProject') id: string, @GetUser() user: User) {
     return this.gradeService.findAllProject(id, user);
   }
 

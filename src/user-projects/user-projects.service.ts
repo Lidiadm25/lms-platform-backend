@@ -39,19 +39,18 @@ export class UserProjectsService {
       .getMany();
 
     const totalUsers = users.length;
-  
 
     return {
       count: totalUsers,
       pages: Math.ceil(totalUsers / limit),
-      total:  totalUsers,
+      total: totalUsers,
       users,
     };
   }
 
   async create(dto: UserDtoProject) {
     // Verificate its not already asigned
-    console.log("entra")
+    console.log('entra');
     const inscription = await this.userProjectRepository.findOneBy({
       user: { id: dto.userId },
       project: { id: dto.projectId },

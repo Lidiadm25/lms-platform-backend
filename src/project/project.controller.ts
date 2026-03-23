@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -14,23 +23,22 @@ export class ProjectController {
 
   @Post()
   @Auth(ValidRoles.admin)
-  create(@Body() createProjectDto: CreateProjectDto,
-  @GetUser() user:User
-  ) {
- 
+  create(@Body() createProjectDto: CreateProjectDto, @GetUser() user: User) {
     return this.projectService.create(createProjectDto, user);
   }
 
-
   @Get()
   @Auth(ValidRoles.admin, ValidRoles.user)
-  findAll(@Query() paginationDto:PaginationDto, @GetUser() user: User) {
+  findAll(@Query() paginationDto: PaginationDto, @GetUser() user: User) {
     return this.projectService.findAll(paginationDto, user);
   }
 
   @Get('search/:query')
-  searchByQuery(@Query() paginationDto:PaginationDto,@Param('query') query: string){
-    return this.projectService.findFiltered(paginationDto,query);
+  searchByQuery(
+    @Query() paginationDto: PaginationDto,
+    @Param('query') query: string,
+  ) {
+    return this.projectService.findFiltered(paginationDto, query);
   }
 
   @Get(':id')

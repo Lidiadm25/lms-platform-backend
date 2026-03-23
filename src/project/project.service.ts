@@ -37,56 +37,62 @@ export class ProjectService {
     }
   }
 
-  async findFiltered(paginationDto: PaginationDto, query:string){
-   query = "%" + query + "%";
-   const projects = await this.projectRepository.createQueryBuilder('projects')
-    .where("title like :query", {query})
-    .getMany();
+  async findFiltered(paginationDto: PaginationDto, query: string) {
+    query = '%' + query + '%';
+    const projects = await this.projectRepository
+      .createQueryBuilder('projects')
+      .where('title like :query', { query })
+      .getMany();
 
-    if(!projects){
-      throw new NotFoundException(`No project found`)
+    if (!projects) {
+      throw new NotFoundException(`No project found`);
     }
 
-    if(paginationDto.limit == undefined) {
-        paginationDto.limit=10;
-      }
-    const totalProjects = projects.length; 
-      return {
-        count: totalProjects,
-        pages: Math.ceil(totalProjects / paginationDto.limit),
-        projects
-      };
-
+    if (paginationDto.limit == undefined) {
+      paginationDto.limit = 10;
+    }
+    const totalProjects = projects.length;
+    return {
+      count: totalProjects,
+      pages: Math.ceil(totalProjects / paginationDto.limit),
+      projects,
+    };
   }
 
   // Returns all projects
+  // TODO divide in two services -> do the difference from controller
   async findAll(paginationDto: PaginationDto, user: User) {
     let projectsQuery: Project[] | undefined;
     let totalProjects: number = 0;
     // All projects
     if (user.roles.includes(ValidRoles.user)) {
-       let query = await this.projectRepository.createQueryBuilder('projects')
-       .leftJoinAndSelect("projects.units", "units")
-       .leftJoinAndSelect("projects.students", "students")
-       .leftJoinAndSelect("projects.author", "author")
-       .leftJoinAndSelect("projects.category", "category")
-       .where("1=1");
+      let query = await this.projectRepository
+        .createQueryBuilder('projects')
+        .leftJoinAndSelect('projects.units', 'units')
+        .leftJoinAndSelect('projects.students', 'students')
+        .leftJoinAndSelect('projects.author', 'author')
+        .leftJoinAndSelect('projects.category', 'category')
+        .where('1=1');
 
-       
-       if(paginationDto.category !== undefined && paginationDto.category.length!=0) {
-        query.andWhere('category.name = :name', {name: paginationDto.category})
-       }
+      if (
+        paginationDto.category !== undefined &&
+        paginationDto.category.length != 0
+      ) {
+        query.andWhere('category.name = :name', {
+          name: paginationDto.category,
+        });
+      }
 
-       try {
-         projectsQuery = await query.getMany();
-       } catch (error) {
-          throw error;
-       }
+      try {
+        projectsQuery = await query.getMany();
+      } catch (error) {
+        throw error;
+      }
       totalProjects = await this.projectRepository.count({});
     } else {
       // Projects only admin created
-      if(!paginationDto.limit){
-        paginationDto.limit=9;
+      if (!paginationDto.limit) {
+        paginationDto.limit = 9;
       }
       projectsQuery = await this.projectRepository.find({
         take: paginationDto.limit,
@@ -104,21 +110,20 @@ export class ProjectService {
       });
       totalProjects = await this.projectRepository.count({});
     }
-    
+
     if (projectsQuery) {
-     
       const projects = projectsQuery.map((project) => ({
         ...project,
         studentsCount: project.students.length,
-      }));  
-      if(paginationDto.limit == undefined) {
-        paginationDto.limit=10;
+      }));
+      if (paginationDto.limit == undefined) {
+        paginationDto.limit = 10;
       }
 
       return {
         count: totalProjects,
         pages: Math.ceil(totalProjects / paginationDto.limit),
-        projects
+        projects,
       };
     }
   }
@@ -130,7 +135,7 @@ export class ProjectService {
     if (isUUID(id)) {
       project = await this.projectRepository.findOne({
         where: { id },
-        relations: ['units', 'units.lessons'],
+        relations: ['units', 'units.lessons', 'author'],
       });
     } else {
       project = null;
@@ -139,15 +144,11 @@ export class ProjectService {
     if (!project) {
       throw new NotFoundException(`Project with id: ${id} not found`);
     }
-
+    console.log(project);
     return project;
   }
 
   async update(id: string, updateProjectDto: UpdateProjectDto) {
-    if (updateProjectDto.id && updateProjectDto.id !== id) {
-      throw new BadRequestException(`Project ID is not valid`);
-    }
-
     const project = await this.projectRepository.findOneBy({ id: id });
 
     if (!project) {

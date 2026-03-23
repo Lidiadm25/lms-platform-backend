@@ -10,13 +10,11 @@ import { PassportModule } from '@nestjs/passport';
 @Module({
   controllers: [SubmitTaskController],
   providers: [SubmitTaskService],
-  imports:[
-      TypeOrmModule.forFeature([ SubmitTask]),
-      TasksModule,
-      PassportModule.register({ defaultStrategy: 'jwt' }),
-    ],
-  exports: [
-      TypeOrmModule
-    ]
+  imports: [
+    TypeOrmModule.forFeature([SubmitTask]),
+    TasksModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
+  exports: [TypeOrmModule],
 })
 export class SubmitTaskModule {}

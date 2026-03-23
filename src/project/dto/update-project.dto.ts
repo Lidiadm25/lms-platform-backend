@@ -3,11 +3,6 @@ import { CreateProjectDto } from './create-project.dto';
 import { IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
 
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {
-  @IsUUID()
-  @IsString()
-  @IsOptional()
-  readonly id?: string;
-
   @IsString()
   @IsOptional()
   @MinLength(1)

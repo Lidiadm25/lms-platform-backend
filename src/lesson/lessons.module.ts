@@ -9,11 +9,7 @@ import { SectionsModule } from 'src/section/sections.module';
 @Module({
   controllers: [LessonsController],
   providers: [LessonsService],
-  imports:[
-    TypeOrmModule.forFeature([ Lesson ]),
-    AuthModule,
-    SectionsModule
-  ],
-  exports:[TypeOrmModule]
+  imports: [TypeOrmModule.forFeature([Lesson]), AuthModule, SectionsModule],
+  exports: [TypeOrmModule],
 })
 export class LessonsModule {}

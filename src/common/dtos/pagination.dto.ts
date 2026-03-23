@@ -4,28 +4,25 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Category } from 'src/category/entities/category.entity';
 import { CreateCategoryDto } from 'src/category/dto/create-category.dto';
 
-
 export class PaginationDto {
-    @ApiProperty({
+  @ApiProperty({
     default: 10,
     description: 'How many rows do you need',
   })
+  @IsOptional()
+  @IsPositive()
+  @Type(() => Number) // enableImplicitConversions: true
+  limit?: number;
 
-    @IsOptional()
-    @IsPositive()
-    @Type( () => Number ) // enableImplicitConversions: true
-    limit?: number;
-    
-    @ApiProperty({
+  @ApiProperty({
     default: 0,
     description: 'How many rows do you want to skip',
   })
-    @IsOptional()
-    @Min(0)
-    @Type( () => Number ) // enableImplicitConversions: true
-    offset?: number;
+  @IsOptional()
+  @Min(0)
+  @Type(() => Number) // enableImplicitConversions: true
+  offset?: number;
 
-    @IsOptional()
-    category!:string;
-
+  @IsOptional()
+  category!: string;
 }

@@ -1,13 +1,12 @@
-import { IsOptional, IsString, IsUUID } from "class-validator";
-import { Section } from "src/section/entities/section.entity";
+import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { Section } from 'src/section/entities/section.entity';
 
 export class CreateOneLessonDto {
+  @IsString()
+  title!: string;
 
-    @IsString()
-    title!:string;
-    
-    @IsString()
-    unit!:string; 
+  @IsString()
+  unit!: string;
 
-    //task?:string; // id del task
+  //task?:string; // id del task
 }

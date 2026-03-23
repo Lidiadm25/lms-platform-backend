@@ -18,7 +18,7 @@ async function bootstrap() {
     origin: 'http://localhost:4200', // Frontend URL
     credentials: true, // Allow cookies or authentication headers
     methods: 'GET,PUT,PATCH,POST,DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   const config = new DocumentBuilder()

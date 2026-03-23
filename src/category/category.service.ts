@@ -9,18 +9,16 @@ import { Repository } from 'typeorm';
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
-    private readonly categoryRepository:Repository<Category>
-  ){}
+    private readonly categoryRepository: Repository<Category>,
+  ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-
     const category = this.categoryRepository.create({
-      ...createCategoryDto
+      ...createCategoryDto,
     });
 
     await this.categoryRepository.save(category);
-    return {category}
-
+    return { category };
   }
 
   findAll() {

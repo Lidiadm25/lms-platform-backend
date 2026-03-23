@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { User } from 'src/auth/entities/user.entity';
@@ -9,29 +13,29 @@ import { Lesson } from 'src/lesson/entities/lesson.entity';
 
 @Injectable()
 export class TasksService {
-
   constructor(
     @InjectRepository(Task)
-    private readonly taskRepository:Repository<Task>,
+    private readonly taskRepository: Repository<Task>,
     @InjectRepository(Lesson)
-    private readonly lessonRepository:Repository<Lesson>
-  ){}
+    private readonly lessonRepository: Repository<Lesson>,
+  ) {}
 
-  async create(createTaskDto: CreateTaskDto, user:User) {
+  async create(createTaskDto: CreateTaskDto, user: User) {
     const lesson = await this.lessonRepository.findOneBy({
-      id: createTaskDto.lesson
-    })
+      id: createTaskDto.lesson,
+    });
 
-    if(!lesson){
-      throw new NotFoundException(`Lesson with id ${createTaskDto.lesson} not found`)
+    if (!lesson) {
+      throw new NotFoundException(
+        `Lesson with id ${createTaskDto.lesson} not found`,
+      );
     }
 
     const newTask = this.taskRepository.create({
-     ...createTaskDto,
-     user_author: user,
-     lesson_task: lesson
-
-    })
+      ...createTaskDto,
+      user_author: user,
+      lesson_task: lesson,
+    });
 
     return await this.taskRepository.save(newTask);
   }
@@ -45,15 +49,14 @@ export class TasksService {
   }
 
   async update(id: string, updateTaskDto: UpdateTaskDto) {
-
-    if(updateTaskDto.id && updateTaskDto.id !== id){
-      throw new BadRequestException(`The task id is not valid`)
+    if (updateTaskDto.id && updateTaskDto.id !== id) {
+      throw new BadRequestException(`The task id is not valid`);
     }
 
-    const task = await this.taskRepository.findOneBy({id: id})
+    const task = await this.taskRepository.findOneBy({ id: id });
 
-    if(!task){
-      throw new NotFoundException(`Task to update was not found`)
+    if (!task) {
+      throw new NotFoundException(`Task to update was not found`);
     }
 
     const updated = await this.taskRepository.merge(task, updateTaskDto);
