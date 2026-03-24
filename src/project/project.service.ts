@@ -23,7 +23,6 @@ export class ProjectService {
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
   ) {}
-  // TODO. change user data / select
   async create(createProjectDto: CreateProjectDto, user: User) {
     try {
       const project = this.projectRepository.create({
@@ -49,7 +48,7 @@ export class ProjectService {
     }
 
     if (paginationDto.limit == undefined) {
-      paginationDto.limit = 10;
+      paginationDto.limit = 9;
     }
     const totalProjects = projects.length;
     return {
@@ -64,16 +63,23 @@ export class ProjectService {
   async findAll(paginationDto: PaginationDto, user: User) {
     let projectsQuery: Project[] | undefined;
     let totalProjects: number = 0;
+    if (!paginationDto.limit) {
+        paginationDto.limit = 9;
+      }
     // All projects
     if (user.roles.includes(ValidRoles.user)) {
-      let query = await this.projectRepository
+      let query = this.projectRepository
         .createQueryBuilder('projects')
         .leftJoinAndSelect('projects.units', 'units')
         .leftJoinAndSelect('projects.students', 'students')
         .leftJoinAndSelect('projects.author', 'author')
         .leftJoinAndSelect('projects.category', 'category')
+        .take(paginationDto.limit)
+        .skip(paginationDto.offset)
+        .orderBy("projects.title", "DESC")
         .where('1=1');
 
+        // Check it has category
       if (
         paginationDto.category !== undefined &&
         paginationDto.category.length != 0
@@ -85,16 +91,16 @@ export class ProjectService {
 
       try {
         projectsQuery = await query.getMany();
+        console.log({projectsQuery})
       } catch (error) {
         throw error;
       }
-      totalProjects = await this.projectRepository.count({});
+      totalProjects =  await query.getCount(); 
+      console.log(totalProjects)
+      
     } else {
       // Projects only admin created
-      if (!paginationDto.limit) {
-        paginationDto.limit = 9;
-      }
-      projectsQuery = await this.projectRepository.find({
+      [projectsQuery, totalProjects] = await this.projectRepository.findAndCount({
         take: paginationDto.limit,
         skip: paginationDto.offset,
         relations: {
@@ -102,13 +108,16 @@ export class ProjectService {
           students: true,
           author: true,
         },
+        order: {
+          title: 'DESC'
+        },
         where: {
           author: {
             id: user.id,
           },
         },
       });
-      totalProjects = await this.projectRepository.count({});
+      
     }
 
     if (projectsQuery) {
@@ -116,9 +125,12 @@ export class ProjectService {
         ...project,
         studentsCount: project.students.length,
       }));
-      if (paginationDto.limit == undefined) {
-        paginationDto.limit = 10;
-      }
+      
+      console.log({
+        count: totalProjects,
+        pages: Math.ceil(totalProjects / paginationDto.limit),
+        projects,
+      })
 
       return {
         count: totalProjects,
@@ -144,7 +156,7 @@ export class ProjectService {
     if (!project) {
       throw new NotFoundException(`Project with id: ${id} not found`);
     }
-    console.log(project);
+
     return project;
   }
 
