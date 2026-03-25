@@ -17,6 +17,9 @@ import { ProjectModule } from './project/project.module';
 import { SubmitTaskModule } from './submit-task/submit-task.module';
 import { GradeModule } from './grade/grade.module';
 import { CategoryModule } from './category/category.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -44,6 +47,12 @@ import { CategoryModule } from './category/category.module';
     SubmitTaskModule,
     GradeModule,
     CategoryModule,
+
+    ServeStaticModule.forRoot({ 
+      rootPath: join(__dirname,'..','public'),
+    }),
+
+    FilesModule 
   ],
 })
 export class AppModule {}
