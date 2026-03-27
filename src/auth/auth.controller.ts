@@ -3,24 +3,16 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
-  UseGuards,
-  Req,
-  SetMetadata,
+  Query,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from './decorators/get-user.decorator';
 import { User } from './entities/user.entity';
-import { RawHeaders } from './decorators/get-rawHeaders.decorator';
-import { UserRoleGuard } from './guards/user-role/user-role.guard';
-import { RoleProtected } from './decorators/role-protected.decorator';
-import { ValidRoles } from './interfaces/validRoles';
 import { Auth } from './decorators/auth.decorator';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -38,51 +30,25 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
-  @Get('private')
-  @UseGuards(AuthGuard())
-  testingPrivateRoute(
-    @Req() request: Request,
-    @GetUser() user: User,
-    @GetUser('email') userEmail: string,
-    @RawHeaders() rawHeaders: string[],
-  ) {
-    console.log('request:', request);
-    return {
-      user,
-      userEmail,
-      rawHeaders,
-    };
-  }
-
   @Get('check-status')
   @Auth()
   checkAuthStatus(@GetUser() user: User) {
     return this.authService.checkAuthStatus(user);
   }
 
-  /*
-    CONTROL DE ROLES
-    - RoleProtected establece los roles permitidos (pasando por parámentro)
-    - AuthGuard verifica que existe el usuario y que tiene token
-    - UserRoleGuard verifica el rol del usuario según los establecidos previamente
-  */
-  @Get('private2')
-  @RoleProtected(ValidRoles.superUser)
-  @UseGuards(AuthGuard(), UserRoleGuard)
-  privateRoute2(@GetUser() user: User) {
-    return {
-      ok: true,
-      user,
-    };
+  @Get()
+  get(){
+    return this.authService.findAll();
   }
 
-  // Utilizando un decorador compuesto
-  @Get('private3')
-  @Auth(ValidRoles.superUser)
-  privateRoute3(@GetUser() user: User) {
-    return {
-      ok: true,
-      user,
-    };
+  @Get('email/:query')
+  getEmails(@Param('query') query:string, @Query() pagination:PaginationDto){
+    let limit:number = 2;
+   if(pagination.limit) {
+      limit = pagination!.limit;
+   } 
+
+    return this.authService.findAllFilteredByEmail(query, limit)
   }
+
 }

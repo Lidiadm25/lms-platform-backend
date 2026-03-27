@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -12,6 +13,7 @@ import bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +27,10 @@ export class AuthService {
     try {
       const { password, ...userData } = createUserDto;
 
+      if(await this.userRepository.countBy({email:userData.email}) > 0 ){
+        throw new BadRequestException(`User already exists with that email`)
+      }
+
       const user = this.userRepository.create({
         ...userData,
         password: bcrypt.hashSync(password, 10),
@@ -32,7 +38,7 @@ export class AuthService {
       await this.userRepository.save(user);
 
       return {
-        ...user,
+         user: { ...user },
         token: this.getJtwToken({ id: user.id }),
       };
     } catch (error) {
@@ -83,5 +89,24 @@ export class AuthService {
   private getJwtToken(payload: JwtPayload) {
     const token = this.jwtService.sign(payload);
     return token;
+  }
+
+  async findAll(){
+    return await this.userRepository.find();
+  }
+
+  async findAllFilteredByEmail(query:string, pagination:number){
+    query = '%'+query+'%'
+    const [users, total]= await this.userRepository.createQueryBuilder("users") 
+    .where("email like :query", {query})
+    .getManyAndCount()
+    
+    if(!users){
+      throw new NotFoundException(`User not found`)
+    }
+
+    return users
+      //pages: Math.ceil( total/ pagination),
+    
   }
 }
