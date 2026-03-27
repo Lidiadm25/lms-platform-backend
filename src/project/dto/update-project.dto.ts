@@ -11,5 +11,10 @@ export class UpdateProjectDto extends PartialType(CreateProjectDto) {
   @IsString()
   @IsOptional()
   @MinLength(1)
-  readonly description?: string;
+  description?: string;
+  @IsString()
+  @IsOptional()
+  image?:string
+
+
 }

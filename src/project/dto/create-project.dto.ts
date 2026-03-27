@@ -25,6 +25,10 @@ export class CreateProjectDto {
   @ValidateNested()
   @IsOptional()
   units!: Section[];
+  
+  @IsString()
+  @IsOptional()
+  image!: string;
 
   @Type(() => CreateCategoryDto)
   @IsString()
