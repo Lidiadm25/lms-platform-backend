@@ -26,11 +26,19 @@ export class UserProjectsController {
     return this.service.getAllPerProject(id, paginationDto);
   }
 
+  
   @Post()
   addUser(@Body() dto: UserDtoProject) {
+    if(dto.userEmail == null && dto.userId == null){
+      throw new Error(`Lack of information`)
+    }
+
     return this.service.create(dto);
   }
 
+
+
+  // FEO MUY FEO
   @Patch('/user/:userId/project/:projectId')
   update(
     @Param('userId') id: string,

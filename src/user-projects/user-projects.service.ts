@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserDtoProject } from './dtos/create-user-projects.dto';
 import { Project } from 'src/project/entities/project.entity';
 import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
-import { throwError } from 'rxjs';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { User } from 'src/auth/entities/user.entity';
 
@@ -20,6 +19,8 @@ export class UserProjectsService {
     private readonly userProjectRepository: Repository<UserProject>,
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async getAllPerProject(id: string, paginationDto: PaginationDto) {
@@ -48,15 +49,36 @@ export class UserProjectsService {
     };
   }
 
+  async queryDependingUserData(
+    dto: UserDtoProject,
+  ): Promise<boolean | undefined> {
+    var query;
+
+    if (dto) {
+      if (dto.userEmail) {
+        query = {
+          user: { email: dto.userEmail },
+          project: { id: dto.projectId },
+        };
+      } else {
+        query = {
+          user: { id: dto.userId },
+          project: { id: dto.projectId },
+        };
+      }
+      const inscription = await this.verificateInscription(query);
+      return inscription != null;
+    }
+    return false;
+  }
+
+  async verificateInscription(query: any) {
+    return await this.userProjectRepository.findOneBy(query);
+  }
+
   async create(dto: UserDtoProject) {
     // Verificate its not already asigned
-    console.log('entra');
-    const inscription = await this.userProjectRepository.findOneBy({
-      user: { id: dto.userId },
-      project: { id: dto.projectId },
-    });
-
-    if (inscription != null) {
+    if ((await this.queryDependingUserData(dto)) == true || undefined) {
       throw new BadRequestException(
         `The user is already asigned to the project`,
       );
@@ -68,11 +90,19 @@ export class UserProjectsService {
     const project = await this.projectRepository.findOneBy({
       id: dto.projectId,
     });
+
+    const user = await this.userRepository.findOne({
+      where: [{ id: dto.userId }, { email: dto.userEmail }],
+    });
+
+    if (!user || !project) {
+      throw new NotFoundException(`Project or user not found with given data`);
+    }
     const date = new Date();
     date.setDate(date.getDate() + project!.duration);
 
     const newUser = this.userProjectRepository.create({
-      user: { id: dto.userId },
+      user: { id: user!.id },
       project: { id: dto.projectId },
       end_date: date,
     });
