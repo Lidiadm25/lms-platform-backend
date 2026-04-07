@@ -11,6 +11,7 @@ import { Project } from 'src/project/entities/project.entity';
 import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { User } from 'src/auth/entities/user.entity';
+import { usersProjectsDto } from './dtos/create-users-project.dto';
 
 @Injectable()
 export class UserProjectsService {
@@ -108,6 +109,41 @@ export class UserProjectsService {
     });
 
     return await this.userProjectRepository.save(newUser);
+  }
+
+  async createMany(dto: usersProjectsDto) {
+    // BULK INSERT
+    // Verificate the data
+    if (dto.users.length == 0) {
+      throw new BadRequestException(`No data was given`);
+    }
+
+    // Collect the project
+    const project = await this.projectRepository.findOneBy({
+      id: dto.users[0].projectId,
+    });
+
+    const date = new Date();
+    date.setDate(date.getDate() + project!.duration);
+    var values: UserProject[] = [];
+    for (let index = 0; index < dto.users.length; index++) {
+      let userId = await this.userRepository.findOne({
+        where: { email: dto.users[index].userEmail },
+      });
+
+      values[index] = this.userProjectRepository.create({
+        user: { id: userId!.id },
+        project: { id: dto.users[index].projectId },
+        end_date: date,
+      });
+    }
+
+    return await this.userProjectRepository
+      .createQueryBuilder()
+      .insert()
+      .into(UserProject)
+      .values(values)
+      .execute();
   }
 
   async update(id: string, pId: string, dto: UpdatedUserDtoProject) {

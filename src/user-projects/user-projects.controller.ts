@@ -16,6 +16,7 @@ import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { ValidRoles } from 'src/auth/interfaces/validRoles';
+import { usersProjectsDto } from './dtos/create-users-project.dto';
 
 @Controller('user-projects')
 export class UserProjectsController {
@@ -26,17 +27,19 @@ export class UserProjectsController {
     return this.service.getAllPerProject(id, paginationDto);
   }
 
-  
   @Post()
   addUser(@Body() dto: UserDtoProject) {
-    if(dto.userEmail == null && dto.userId == null){
-      throw new Error(`Lack of information`)
+    if (dto.userEmail == null && dto.userId == null) {
+      throw new Error(`Lack of information`);
     }
 
     return this.service.create(dto);
   }
 
-
+  @Post('bulk')
+  addUsers(@Body() dto: usersProjectsDto) {
+    return this.service.createMany(dto);
+  }
 
   // FEO MUY FEO
   @Patch('/user/:userId/project/:projectId')
