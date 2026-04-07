@@ -9,6 +9,7 @@ import { fileNamer } from './helpers/fileNamer.helper';
 import { ConfigService } from '@nestjs/config';
 
 
+
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService,
@@ -22,7 +23,7 @@ export class FilesController {
     @Param('imageName') imageName:string){
 
       const path = this.filesService.getStaticProductImage( imageName );
-
+      
       res.sendFile ( path );
 
       /*
@@ -34,23 +35,51 @@ export class FilesController {
   
 
 
+ 
   @Post('project')
   @UseInterceptors( FileInterceptor('file', {
     fileFilter: fileFilter,
     storage: diskStorage({
       destination: './static/projects',
       filename: fileNamer
-    })
+    }),
 }))
 
   uploadProductImage(
     @UploadedFile() file: Express.Multer.File){
-      
+
       if(!file){
         throw new BadRequestException('No hay archivo ')
       }
       const secureUrl = `${this.configService.get('HOST_API')}/files/project/${file.filename}`;
-
+    console.log({secureUrl})
     return {secureUrl};
   }
+
+   // NO SÉ CÓMO HACERLO!
+   
+  @Post('lesson')
+ @UseInterceptors( FileInterceptor('file', {
+    fileFilter: fileFilter,
+    storage: diskStorage({
+      destination: './static/projects',
+      filename: fileNamer
+    }),
+    limits : { fileSize: 2e+9}
+}))
+
+  uploadProjectFile(
+    @UploadedFile() file: Express.Multer.File, @Body('maxSize') size:number){
+      
+      if(!file){
+        throw new BadRequestException('No hay archivo ')
+      }
+     if(file.size > +size) {
+        throw new BadRequestException(`File is over max size: ${file.size} > ${size} ` )
+      }
+      const secureUrl = `${this.configService.get('HOST_API')}/files/project/${file.filename}`;
+    console.log({secureUrl})
+     return {secureUrl};
+  }
+    
 }
