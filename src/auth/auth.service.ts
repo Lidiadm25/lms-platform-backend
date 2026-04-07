@@ -14,6 +14,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { UserProject } from 'src/user-projects/entities/user-project.entity';
 
 @Injectable()
 export class AuthService {
@@ -27,8 +28,8 @@ export class AuthService {
     try {
       const { password, ...userData } = createUserDto;
 
-      if(await this.userRepository.countBy({email:userData.email}) > 0 ){
-        throw new BadRequestException(`User already exists with that email`)
+      if ((await this.userRepository.countBy({ email: userData.email })) > 0) {
+        throw new BadRequestException(`User already exists with that email`);
       }
 
       const user = this.userRepository.create({
@@ -38,7 +39,7 @@ export class AuthService {
       await this.userRepository.save(user);
 
       return {
-         user: { ...user },
+        user: { ...user },
         token: this.getJtwToken({ id: user.id }),
       };
     } catch (error) {
@@ -91,22 +92,43 @@ export class AuthService {
     return token;
   }
 
-  async findAll(){
+  async findAll() {
     return await this.userRepository.find();
   }
 
-  async findAllFilteredByEmail(query:string, pagination:number){
-    query = '%'+query+'%'
-    const [users, total]= await this.userRepository.createQueryBuilder("users") 
+  async findAllFilteredByEmail(
+    query: string,
+    pagination: number,
+    projectId: string,
+  ) {
+    query = '%' + query + '%';
+    // todos los users
+    /* const [users, total]= await this.userRepository.createQueryBuilder("users") 
     .where("email like :query", {query})
     .getManyAndCount()
-    
-    if(!users){
-      throw new NotFoundException(`User not found`)
+    */
+    // Usuarios inscritos en proyectos
+
+    const usersNotIn = await this.userRepository
+      .createQueryBuilder('users')
+      .where((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('up.userId')
+          .from(UserProject, 'up')
+          .where('up.projectId = :projectId')
+          .getQuery();
+
+        return 'users.id NOT IN ' + subQuery;
+      })
+      .setParameter('projectId', projectId)
+      .getMany();
+
+    if (!usersNotIn) {
+      throw new NotFoundException(`User not found`);
     }
 
-    return users
-      //pages: Math.ceil( total/ pagination),
-    
+    return usersNotIn;
+    //pages: Math.ceil( total/ pagination),
   }
 }

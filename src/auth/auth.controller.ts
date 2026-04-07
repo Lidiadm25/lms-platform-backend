@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -37,18 +30,21 @@ export class AuthController {
   }
 
   @Get()
-  get(){
+  get() {
     return this.authService.findAll();
   }
 
-  @Get('email/:query')
-  getEmails(@Param('query') query:string, @Query() pagination:PaginationDto){
-    let limit:number = 2;
-   if(pagination.limit) {
+  @Get('email/:query/:projectId')
+  getEmails(
+    @Param('query') query: string,
+    @Param('projectId') projectId: string,
+    @Query() pagination: PaginationDto,
+  ) {
+    let limit: number = 2;
+    if (pagination.limit) {
       limit = pagination!.limit;
-   } 
+    }
 
-    return this.authService.findAllFilteredByEmail(query, limit)
+    return this.authService.findAllFilteredByEmail(query, limit, projectId);
   }
-
 }
