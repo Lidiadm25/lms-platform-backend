@@ -64,8 +64,8 @@ export class ProjectService {
     let projectsQuery: Project[] | undefined;
     let totalProjects: number = 0;
     if (!paginationDto.limit) {
-        paginationDto.limit = 9;
-      }
+      paginationDto.limit = 9;
+    }
     // All projects
     if (user.roles.includes(ValidRoles.user)) {
       let query = this.projectRepository
@@ -76,10 +76,10 @@ export class ProjectService {
         .leftJoinAndSelect('projects.category', 'category')
         .take(paginationDto.limit)
         .skip(paginationDto.offset)
-        .orderBy("projects.title", "DESC")
-        .where('1=1');
+        .orderBy('projects.title', 'DESC')
+        .where('projects.isActive=true');
 
-        // Check it has category
+      // Check it has category
       if (
         paginationDto.category !== undefined &&
         paginationDto.category.length != 0
@@ -91,33 +91,30 @@ export class ProjectService {
 
       try {
         projectsQuery = await query.getMany();
-        console.log({projectsQuery})
       } catch (error) {
         throw error;
       }
-      totalProjects =  await query.getCount(); 
-      console.log(totalProjects)
-      
+      totalProjects = await query.getCount();
     } else {
       // Projects only admin created
-      [projectsQuery, totalProjects] = await this.projectRepository.findAndCount({
-        take: paginationDto.limit,
-        skip: paginationDto.offset,
-        relations: {
-          units: true,
-          students: true,
-          author: true,
-        },
-        order: {
-          title: 'DESC'
-        },
-        where: {
-          author: {
-            id: user.id,
+      [projectsQuery, totalProjects] =
+        await this.projectRepository.findAndCount({
+          take: paginationDto.limit,
+          skip: paginationDto.offset,
+          relations: {
+            units: true,
+            students: true,
+            author: true,
           },
-        },
-      });
-      
+          order: {
+            title: 'DESC',
+          },
+          where: {
+            author: {
+              id: user.id,
+            },
+          },
+        });
     }
 
     if (projectsQuery) {
@@ -125,12 +122,6 @@ export class ProjectService {
         ...project,
         studentsCount: project.students.length,
       }));
-      
-      console.log({
-        count: totalProjects,
-        pages: Math.ceil(totalProjects / paginationDto.limit),
-        projects,
-      })
 
       return {
         count: totalProjects,
@@ -178,7 +169,6 @@ export class ProjectService {
   async remove(id: string) {
     const project = await this.findOne(id);
     await this.projectRepository.remove(project);
-    return `Removed successfully`;
   }
 
   private handleDBExceptions(error: any) {
