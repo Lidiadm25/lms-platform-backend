@@ -44,12 +44,14 @@ export class SectionsService {
   } */
 
   async findOne(id: string) {
-    const section = await this.sectionRepository.findOneBy({ id: id });
+    const section = await this.sectionRepository.findOne({ where : {id: id }, relations: {
+      lessons: true
+    }});
 
     if (!section) {
       throw new NotFoundException(`The section with id ${id} is not found`);
     }
-    return { section };
+    return section ;
   }
 
   async update(id: string, updateSectionDto: UpdateSectionDto) {
@@ -65,13 +67,12 @@ export class SectionsService {
     const { project, ...rest } = updateSectionDto;
 
     const updated = await this.sectionRepository.merge(section, rest);
-
     return await this.sectionRepository.save(updated);
   }
 
   async remove(id: string) {
     const section = await this.findOne(id);
 
-    await this.sectionRepository.remove(section.section);
+    return await this.sectionRepository.remove(section);
   }
 }

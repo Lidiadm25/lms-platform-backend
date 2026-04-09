@@ -24,7 +24,6 @@ export class LessonsService {
 
   async create(createOneLessonDto: CreateOneLessonDto) {
     // Búsqueda por sección
-    console.log('aqui');
     const section = await this.sectionRepository.findOneBy({
       id: createOneLessonDto.unit,
     });
@@ -40,7 +39,6 @@ export class LessonsService {
       title: createOneLessonDto.title,
       unit: section,
     });
-    console.log('aqui');
 
     return await this.lessonRepository.save(newLesson);
   }
@@ -53,14 +51,15 @@ export class LessonsService {
     let lesson!: Lesson | null;
 
     if (isUUID(id)) {
-      lesson = await this.lessonRepository.findOneBy({ id: id });
+      lesson = await this.lessonRepository.findOne({ where : {id: id }
+    
+  });
     }
 
     if (!lesson) {
       throw new NotFoundException(`Lesson with id ${id} not found`);
     }
-
-    return { lesson };
+    return  lesson ;
   }
 
   async update(id: string, updateLessonDto: UpdateLessonDto) {
@@ -87,6 +86,5 @@ export class LessonsService {
     }
 
     await this.lessonRepository.remove(lesson);
-    return `Removed correctly`;
   }
 }
