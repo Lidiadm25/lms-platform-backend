@@ -5,12 +5,8 @@ import { Section } from 'src/section/entities/section.entity';
 import { Survey } from 'src/survey/entities/survey.entity';
 import { UserProject } from 'src/user-projects/entities/user-project.entity';
 import {
-  AfterInsert,
-  AfterUpdate,
   Column,
   Entity,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -55,4 +51,7 @@ export class Project {
 
   @OneToMany(() => Grade, (grades) => grades.project)
   grades!: Grade[];
+
+  @Column({type: 'boolean', default:false})
+  isActive!:boolean;
 }

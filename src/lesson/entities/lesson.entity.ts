@@ -18,6 +18,8 @@ export class Lesson {
   url_file?: string;
   @Column({ type: 'varchar', nullable: false, length: '50' })
   title!: string;
+  @Column({ type: 'varchar', nullable: true })
+  description!: string;
 
   @ManyToOne(() => Section, (section) => section.lessons, {
     onDelete: 'CASCADE',

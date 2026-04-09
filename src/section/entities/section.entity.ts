@@ -32,7 +32,7 @@ export class Section {
 
   // Eager true aquí hace que se carguen automáticamente!!!!!!
   @OneToMany(() => Lesson, (lesson) => lesson.unit, { cascade: true })
-  lessons?: Lesson[];
+  lessons!: Lesson[];
 
   /* @BeforeInsert()
     async generarNumero() {
