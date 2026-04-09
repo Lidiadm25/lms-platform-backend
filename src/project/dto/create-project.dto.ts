@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
+  IsBoolean,
   IsOptional,
   IsString,
   MinLength,
@@ -33,4 +34,10 @@ export class CreateProjectDto {
   @Type(() => CreateCategoryDto)
   @IsString()
   category!: CreateCategoryDto;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive!: boolean;
+
+
 }
