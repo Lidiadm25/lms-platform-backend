@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { UserProject } from './entities/user-project.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDtoProject } from './dtos/create-user-projects.dto';
@@ -146,6 +146,9 @@ export class UserProjectsService {
       .execute();
   }
 
+  async bulkDelete(ids: string[]) {
+    return await this.userProjectRepository.delete({ id: In(ids) });
+  }
   async update(id: string, pId: string, dto: UpdatedUserDtoProject) {
     const user_pro = await this.userProjectRepository.findOneBy({
       user: { id: id },

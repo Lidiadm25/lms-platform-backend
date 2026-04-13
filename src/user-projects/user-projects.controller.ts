@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Injectable,
   Param,
@@ -39,6 +40,12 @@ export class UserProjectsController {
   @Post('bulk')
   addUsers(@Body() dto: usersProjectsDto) {
     return this.service.createMany(dto);
+  }
+
+  @Delete('bulk')
+  deleteUsers(@Body() ids: string[]){
+    console.log("entra aquí")
+    return this.service.bulkDelete(ids)
   }
 
   // FEO MUY FEO
