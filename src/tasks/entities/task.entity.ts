@@ -1,9 +1,10 @@
+import { BadRequestException } from '@nestjs/common';
 import { User } from 'src/auth/entities/user.entity';
 import { Lesson } from 'src/lesson/entities/lesson.entity';
 import { SubmitTask } from 'src/submit-task/entities/submit-task.entity';
 import {
-  AfterLoad,
   BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   ManyToOne,
@@ -24,8 +25,6 @@ export class Task {
   @Column()
   description!: string;
 
-  // status:string; enum o boolean
-
   @ManyToOne(() => Lesson, (lesson) => lesson.tasks, { onDelete: 'CASCADE' })
   lesson_task!: Lesson;
 
@@ -41,16 +40,22 @@ export class Task {
   @Column('datetime', { nullable: true })
   task_close!: Date;
 
-  /* @Column("boolean", {default: false})
-        active!:Boolean;
-     */
-
   @BeforeInsert()
   updateDates() {
-    console.log('entrando');
     this.task_created = new Date();
-    console.log(this.task_created);
   }
+
+  @BeforeUpdate()
+  @BeforeInsert()
+  verifyDates(){
+    if(this.task_open && this.task_close){
+
+      if(this.task_open > this.task_close){
+        throw new BadRequestException(`Task dates`)
+      }
+    }
+  }
+
 
   getActive(): boolean {
     if (this.task_close == null) {

@@ -44,14 +44,14 @@ export class TasksService {
     return `This action returns all tasks`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(id: string) {
+    const task = this.taskRepository.findOneBy({id: id});
+    if(!task) throw new NotFoundException(`Task not found`)
+
+    return task;
   }
 
   async update(id: string, updateTaskDto: UpdateTaskDto) {
-    if (updateTaskDto.id && updateTaskDto.id !== id) {
-      throw new BadRequestException(`The task id is not valid`);
-    }
 
     const task = await this.taskRepository.findOneBy({ id: id });
 

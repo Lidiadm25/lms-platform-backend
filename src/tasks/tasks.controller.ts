@@ -28,7 +28,6 @@ export class TasksController {
   @UseGuards(AuthGuard(), UserRoleGuard)
   create(
     @Body() createTaskDto: CreateTaskDto,
-    @Req() request: Request,
     @GetUser() user: User,
   ) {
     return this.tasksService.create(createTaskDto, user);
@@ -41,7 +40,7 @@ export class TasksController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.tasksService.findOne(+id);
+    return this.tasksService.findOne(id);
   }
 
   @Patch(':id')

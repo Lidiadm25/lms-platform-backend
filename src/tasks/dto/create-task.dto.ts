@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsDate, IsDateString, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateTaskDto {
   @IsString()
@@ -12,4 +12,9 @@ export class CreateTaskDto {
   @IsString()
   @IsNotEmpty()
   lesson!: string;
+
+  @IsDateString()
+  task_open!: Date;
+  @IsDateString()
+  task_close!:Date;
 }
