@@ -21,7 +21,7 @@ export class SubmitTask {
   @ManyToOne(() => User)
   student!: User;
 
-  @Column()
+  @Column('varchar', {nullable: true})
   url_file?: string;
 
   @OneToOne(() => Grade, (grade) => grade.taskSubmitted)
@@ -38,9 +38,9 @@ export class SubmitTask {
     left_time!:number;
     */
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  updateDates() {
-    this.date_send = new Date();
-  }
+ 
+  // @BeforeUpdate()
+  // updateDates() {
+  //   this.date_send = new Date();
+  // }
 }

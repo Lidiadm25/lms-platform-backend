@@ -17,4 +17,7 @@ export class CreateTaskDto {
   task_open!: Date;
   @IsDateString()
   task_close!:Date;
+
+  @IsString()
+  idProject!:string;
 }

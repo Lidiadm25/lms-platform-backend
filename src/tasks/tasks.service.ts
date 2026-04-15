@@ -1,15 +1,16 @@
 import {
-  BadRequestException,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/entities/user.entity';
+import { Lesson } from 'src/lesson/entities/lesson.entity';
+import { SubmitTask } from 'src/submit-task/entities/submit-task.entity';
+import { Repository } from 'typeorm';
+import { UserProjectsService } from './../user-projects/user-projects.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { User } from 'src/auth/entities/user.entity';
 import { Task } from './entities/task.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Lesson } from 'src/lesson/entities/lesson.entity';
 
 @Injectable()
 export class TasksService {
@@ -18,6 +19,9 @@ export class TasksService {
     private readonly taskRepository: Repository<Task>,
     @InjectRepository(Lesson)
     private readonly lessonRepository: Repository<Lesson>,
+    @InjectRepository(SubmitTask)
+    private readonly submitRepository : Repository<SubmitTask>,
+    private readonly userProjectsService : UserProjectsService
   ) {}
 
   async create(createTaskDto: CreateTaskDto, user: User) {
@@ -31,13 +35,35 @@ export class TasksService {
       );
     }
 
+   const {users, ...rest} = await this.userProjectsService.getAllPerProject(createTaskDto.idProject, null )
+
+
     const newTask = this.taskRepository.create({
       ...createTaskDto,
       user_author: user,
       lesson_task: lesson,
     });
+   var listSubmits : SubmitTask[] = [];
+    for (let index = 0; index < users.length; index++) {
+     let newSubmit = this.submitRepository.create({
+        student: users[index].user,
+        task: newTask
+      })
+      listSubmits.push(newSubmit)
+      
+    }
+    
+    console.log(listSubmits)
 
-    return await this.taskRepository.save(newTask);
+    await this.taskRepository.save(newTask);
+
+    await this.submitRepository.createQueryBuilder()
+    .insert()
+    .into(SubmitTask)
+    .values(listSubmits)
+    .execute()
+
+    return 
   }
 
   findAll() {

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SubmitTaskService } from './submit-task.service';
 import { SubmitTaskController } from './submit-task.controller';
 import { SubmitTask } from './entities/submit-task.entity';
@@ -12,7 +12,8 @@ import { PassportModule } from '@nestjs/passport';
   providers: [SubmitTaskService],
   imports: [
     TypeOrmModule.forFeature([SubmitTask]),
-    TasksModule,
+    forwardRef(()=> TasksModule),
+    
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   exports: [TypeOrmModule],

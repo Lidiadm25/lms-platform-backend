@@ -11,5 +11,6 @@ import { AuthModule } from 'src/auth/auth.module';
   controllers: [UserProjectsController],
   providers: [UserProjectsService],
   imports: [TypeOrmModule.forFeature([UserProject]), ProjectModule, AuthModule],
+  exports:[UserProjectsService, TypeOrmModule]
 })
 export class UsersProjectsModule {}
