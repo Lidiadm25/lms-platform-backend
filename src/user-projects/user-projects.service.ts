@@ -149,6 +149,7 @@ export class UserProjectsService {
   async bulkDelete(ids: string[]) {
     return await this.userProjectRepository.delete({ id: In(ids) });
   }
+  
   async update(id: string, pId: string, dto: UpdatedUserDtoProject) {
     const user_pro = await this.userProjectRepository.findOneBy({
       user: { id: id },
@@ -162,5 +163,29 @@ export class UserProjectsService {
     const updated = await this.userProjectRepository.merge(user_pro, dto);
 
     return await this.userProjectRepository.save(updated);
+  }
+
+  // Todo check pagination
+  async projectsPerUser(id:string){
+    const user = await this.userRepository.findBy({id: id});
+
+    if(!user) throw new NotFoundException(`User not found`)
+    
+   const [projectsResult , count ] = await this.userProjectRepository.findAndCount({
+    where : {user: {id : id}},
+    relations:{
+       project: true
+    },
+    select: {
+      project : true
+    }
+   })
+    if(!projectsResult) throw new NotFoundException(`No projects found for the user`)
+
+      return {
+        count: count,
+        pages: Math.ceil(count / 6),
+        projects: projectsResult
+      };
   }
 }

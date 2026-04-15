@@ -13,10 +13,7 @@ import { UserProjectsService } from './user-projects.service';
 import { UserDtoProject } from './dtos/create-user-projects.dto';
 import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { User } from 'src/auth/entities/user.entity';
-import { Auth } from 'src/auth/decorators/auth.decorator';
-import { ValidRoles } from 'src/auth/interfaces/validRoles';
+
 import { usersProjectsDto } from './dtos/create-users-project.dto';
 
 @Controller('user-projects')
@@ -26,6 +23,11 @@ export class UserProjectsController {
   @Get(':id')
   getAll(@Param('id') id: string, @Query() paginationDto: PaginationDto) {
     return this.service.getAllPerProject(id, paginationDto);
+  }
+
+  @Get('projects/:id')
+  getProjects(@Param('id') id:string){
+    return this.service.projectsPerUser(id)
   }
 
   @Post()
