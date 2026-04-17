@@ -25,7 +25,7 @@ export class Task {
   @Column()
   description!: string;
 
-  @ManyToOne(() => Lesson, (lesson) => lesson.tasks, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Lesson, (lesson) => lesson.tasks, { onDelete: 'CASCADE' , eager:true})
   lesson_task!: Lesson;
 
   @OneToMany(() => SubmitTask, (sub) => sub.task, { cascade: true })
@@ -39,6 +39,9 @@ export class Task {
 
   @Column('datetime', { nullable: true })
   task_close!: Date;
+
+  @Column('int')
+  fileSize ?: number;
 
   @BeforeInsert()
   updateDates() {

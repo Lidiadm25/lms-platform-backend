@@ -4,6 +4,7 @@ import {
   IsDate,
   IsDateString,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -30,4 +31,7 @@ export class UpdateTaskDto extends PartialType(CreateTaskDto) {
   @IsDateString()
   @IsOptional()
   task_open!: Date;
+
+  @IsNumber()
+  fileSize !:number;
 }
