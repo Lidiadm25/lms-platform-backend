@@ -18,6 +18,7 @@ import { RoleProtected } from 'src/auth/decorators/role-protected.decorator';
 import { ValidRoles } from 'src/auth/interfaces/validRoles';
 import { UserRoleGuard } from 'src/auth/guards/user-role/user-role.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
 @Controller('submit-task')
 export class SubmitTaskController {
@@ -42,6 +43,22 @@ export class SubmitTaskController {
   findOne(@Param('id') id: string) {
     return this.submitTaskService.findOne(id);
   }
+
+  @Get('/user/:id')
+
+  findTasksUser(@Param('id') id: string) {
+    return this.submitTaskService.findByUser(id);
+  }
+
+  @Get('/task/:id')
+    @Auth()
+  findSubmitByTask(@Param('id') id:string, @GetUser() user: User)
+  {
+    console.log("aa");
+    
+   return this.submitTaskService.findByTask(id, user);
+  }
+  
 
   @Patch(':id')
   update(

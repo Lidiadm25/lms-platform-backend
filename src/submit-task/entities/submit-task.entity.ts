@@ -1,16 +1,12 @@
-import { IsDate } from 'class-validator';
 import { User } from 'src/auth/entities/user.entity';
 import { Grade } from 'src/grade/entities/grade.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 
 @Entity('submit')
@@ -24,7 +20,7 @@ export class SubmitTask {
   @Column('varchar', {nullable: true})
   url_file?: string;
 
-  @OneToOne(() => Grade, (grade) => grade.taskSubmitted)
+  @OneToOne(() => Grade, (grade) => grade.taskSubmitted, {nullable: true})
   grade!: Grade;
 
   @ManyToOne(() => Task, (task) => task.submissions, { onDelete: 'CASCADE' })
