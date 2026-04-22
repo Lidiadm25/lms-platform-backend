@@ -34,4 +34,7 @@ export class Grade {
   min_range!: number;
   @Column('int', { default: 10 })
   max_range!: number;
+
+  @Column('varchar')
+  feedback !: string;
 }

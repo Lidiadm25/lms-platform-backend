@@ -22,4 +22,9 @@ export class CreateGradeDto {
   @IsNotEmpty()
   @IsOptional()
   max_range!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  feedback!:string;
 }
