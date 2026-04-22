@@ -24,15 +24,22 @@ export class LessonsController {
     return this.lessonsService.create(createOneLessonDto);
   }
 
-  /*@Get()
-  findAll() {
-    return this.lessonsService.findAll();
-  } */
+  @Get('unit-id/:id')
+  findAll(@Param('id') id:string) {
+    return this.lessonsService.findAllByUnit(id);
+  } 
+
+    @Get('tree/:id')
+  findTree(@Param('id') id: string) {
+    return this.lessonsService.getTree(id);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.lessonsService.findOne(id);
   }
+
+
 
   @Patch(':id')
   @Auth(ValidRoles.admin)

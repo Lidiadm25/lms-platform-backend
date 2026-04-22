@@ -35,12 +35,12 @@ export class LessonsService {
 
     // Create para que no se guarde como dto
 
-    const newLesson = this.lessonRepository.create({
-      title: createOneLessonDto.title,
+    const lesson = this.lessonRepository.create({
+      ...createOneLessonDto,
       unit: section,
     });
 
-    return await this.lessonRepository.save(newLesson);
+    return await this.lessonRepository.save(lesson);
   }
 
   /*findAll() {
@@ -51,15 +51,36 @@ export class LessonsService {
     let lesson!: Lesson | null;
 
     if (isUUID(id)) {
-      lesson = await this.lessonRepository.findOne({ where : {id: id }
-    
-  });
+      lesson = await this.lessonRepository.findOne({ where: { id: id }, relations: {tasks:true} });
     }
 
     if (!lesson) {
       throw new NotFoundException(`Lesson with id ${id} not found`);
     }
-    return  lesson ;
+    return lesson;
+  }
+
+  async getTree(id:string){
+
+    const lesson = await this.lessonRepository.createQueryBuilder("lesson")
+    .leftJoinAndSelect("lesson.unit", "section")
+    .leftJoinAndSelect("section.project","project")
+    .where("lesson.id = :id", {id: id})
+    .getRawOne()
+
+    return lesson
+    
+  }
+
+  async findAllByUnit(id:string){
+    const [lessons, count] = await this.lessonRepository.findAndCount({
+      where: {unit:{id: id}}
+    })
+
+    return {
+      lessons: lessons? lessons : [],
+      count: count
+    }
   }
 
   async update(id: string, updateLessonDto: UpdateLessonDto) {
