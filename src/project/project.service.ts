@@ -5,15 +5,15 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { isUUID } from 'class-validator';
+import { User } from 'src/auth/entities/user.entity';
+import { ValidRoles } from 'src/auth/interfaces/validRoles';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { Repository } from 'typeorm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
-import { Repository } from 'typeorm';
-import { User } from 'src/auth/entities/user.entity';
-import { isUUID } from 'class-validator';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { ValidRoles } from 'src/auth/interfaces/validRoles';
 
 @Injectable()
 export class ProjectService {
@@ -30,7 +30,7 @@ export class ProjectService {
         author: user,
       });
       await this.projectRepository.save(project);
-      return { project };
+      return project;
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -138,7 +138,7 @@ export class ProjectService {
     if (isUUID(id)) {
       project = await this.projectRepository.findOne({
         where: { id },
-        relations: ['units', 'units.lessons', 'author'],
+        relations: ['units', 'units.lessons', 'author', 'category'],
       });
     } else {
       project = null;
@@ -147,7 +147,6 @@ export class ProjectService {
     if (!project) {
       throw new NotFoundException(`Project with id: ${id} not found`);
     }
-
     return project;
   }
 

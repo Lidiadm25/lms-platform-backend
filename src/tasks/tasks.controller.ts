@@ -1,23 +1,22 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Req,
-  UseGuards,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards
 } from '@nestjs/common';
-import { TasksService } from './tasks.service';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { RoleProtected } from 'src/auth/decorators/role-protected.decorator';
+import { User } from 'src/auth/entities/user.entity';
+import { UserRoleGuard } from 'src/auth/guards/user-role/user-role.guard';
+import { ValidRoles } from 'src/auth/interfaces/validRoles';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { User } from 'src/auth/entities/user.entity';
-import { AuthGuard } from '@nestjs/passport';
-import { RoleProtected } from 'src/auth/decorators/role-protected.decorator';
-import { ValidRoles } from 'src/auth/interfaces/validRoles';
-import { UserRoleGuard } from 'src/auth/guards/user-role/user-role.guard';
+import { TasksService } from './tasks.service';
 
 @Controller('tasks')
 export class TasksController {
@@ -26,16 +25,18 @@ export class TasksController {
   @Post()
   @RoleProtected(ValidRoles.admin)
   @UseGuards(AuthGuard(), UserRoleGuard)
-  create(
-    @Body() createTaskDto: CreateTaskDto,
-    @GetUser() user: User,
-  ) {
+  create(@Body() createTaskDto: CreateTaskDto, @GetUser() user: User) {
     return this.tasksService.create(createTaskDto, user);
   }
 
   @Get()
   findAll() {
     return this.tasksService.findAll();
+  }
+
+  @Get('/lesson-id/:id')
+  findByLesson(@Param('id') id: string) {
+    return this.tasksService.findAllByLesson(id);
   }
 
   @Get(':id')

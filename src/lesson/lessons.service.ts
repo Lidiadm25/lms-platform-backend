@@ -1,17 +1,15 @@
-import { Lesson } from './entities/lesson.entity';
 import {
   BadRequestException,
-  Inject,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
-import { CreateLessonDto } from './dto/create-lesson.dto';
-import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { isUUID } from 'class-validator';
-import { CreateOneLessonDto } from './dto/create-one-lesson.dto';
 import { Section } from 'src/section/entities/section.entity';
+import { Repository } from 'typeorm';
+import { CreateOneLessonDto } from './dto/create-one-lesson.dto';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { Lesson } from './entities/lesson.entity';
 
 @Injectable()
 export class LessonsService {
@@ -51,7 +49,10 @@ export class LessonsService {
     let lesson!: Lesson | null;
 
     if (isUUID(id)) {
-      lesson = await this.lessonRepository.findOne({ where: { id: id }, relations: {tasks:true} });
+      lesson = await this.lessonRepository.findOne({
+        where: { id: id },
+        relations: { tasks: true },
+      });
     }
 
     if (!lesson) {
@@ -60,27 +61,23 @@ export class LessonsService {
     return lesson;
   }
 
-  async getTree(id:string){
+  async getTree(id: string) {
+    const lesson = await this.lessonRepository
+      .createQueryBuilder('lesson')
+      .leftJoinAndSelect('lesson.unit', 'section')
+      .leftJoinAndSelect('section.project', 'project')
+      .where('lesson.id = :id', { id: id })
+      .getRawOne();
 
-    const lesson = await this.lessonRepository.createQueryBuilder("lesson")
-    .leftJoinAndSelect("lesson.unit", "section")
-    .leftJoinAndSelect("section.project","project")
-    .where("lesson.id = :id", {id: id})
-    .getRawOne()
-
-    return lesson
-    
+    return lesson;
   }
 
-  async findAllByUnit(id:string){
-    const [lessons, count] = await this.lessonRepository.findAndCount({
-      where: {unit:{id: id}}
-    })
+  async findAllByUnit(id: string) {
+    const lessons = await this.lessonRepository.find({
+      where: { unit: { id: id } },
+    });
 
-    return {
-      lessons: lessons? lessons : [],
-      count: count
-    }
+    return lessons;
   }
 
   async update(id: string, updateLessonDto: UpdateLessonDto) {

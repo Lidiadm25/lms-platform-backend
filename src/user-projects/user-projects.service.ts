@@ -3,15 +3,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { In, Repository } from 'typeorm';
-import { UserProject } from './entities/user-project.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserDtoProject } from './dtos/create-user-projects.dto';
-import { Project } from 'src/project/entities/project.entity';
-import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { User } from 'src/auth/entities/user.entity';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { Project } from 'src/project/entities/project.entity';
+import { In, Repository } from 'typeorm';
+import { UserDtoProject } from './dtos/create-user-projects.dto';
 import { usersProjectsDto } from './dtos/create-users-project.dto';
+import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
+import { UserProject } from './entities/user-project.entity';
 
 @Injectable()
 export class UserProjectsService {
@@ -24,9 +24,13 @@ export class UserProjectsService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async getAllPerProject(id: string, paginationDto: PaginationDto) {
+  async getAllPerProject(id: string, paginationDto: PaginationDto | null) {
     // Search that the project exists
-    const { limit = 10, offset = 0 } = paginationDto;
+    var limit = 10;
+    if (paginationDto) {
+      var { limit = 10, offset = 0 } = paginationDto;
+    }
+
     const project = await this.projectRepository.findOneBy({ id: id });
 
     if (!project) {
@@ -149,7 +153,7 @@ export class UserProjectsService {
   async bulkDelete(ids: string[]) {
     return await this.userProjectRepository.delete({ id: In(ids) });
   }
-  
+
   async update(id: string, pId: string, dto: UpdatedUserDtoProject) {
     const user_pro = await this.userProjectRepository.findOneBy({
       user: { id: id },
@@ -166,26 +170,28 @@ export class UserProjectsService {
   }
 
   // Todo check pagination
-  async projectsPerUser(id:string){
-    const user = await this.userRepository.findBy({id: id});
+  async projectsPerUser(id: string) {
+    const user = await this.userRepository.findBy({ id: id });
 
-    if(!user) throw new NotFoundException(`User not found`)
-    
-   const [projectsResult , count ] = await this.userProjectRepository.findAndCount({
-    where : {user: {id : id}},
-    relations:{
-       project: true
-    },
-    select: {
-      project : true
-    }
-   })
-    if(!projectsResult) throw new NotFoundException(`No projects found for the user`)
+    if (!user) throw new NotFoundException(`User not found`);
 
-      return {
-        count: count,
-        pages: Math.ceil(count / 6),
-        projects: projectsResult
-      };
+    const [projectsResult, count] =
+      await this.userProjectRepository.findAndCount({
+        where: { user: { id: id } },
+        relations: {
+          project: true,
+        },
+        select: {
+          project: true,
+        },
+      });
+    if (!projectsResult)
+      throw new NotFoundException(`No projects found for the user`);
+
+    return {
+      count: count,
+      pages: Math.ceil(count / 6),
+      projects: projectsResult,
+    };
   }
 }

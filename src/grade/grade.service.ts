@@ -4,14 +4,13 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/entities/user.entity';
+import { SubmitTask } from 'src/submit-task/entities/submit-task.entity';
+import { Repository } from 'typeorm';
 import { CreateGradeDto } from './dto/create-grade.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
-import { User } from 'src/auth/entities/user.entity';
-import { Not, Repository } from 'typeorm';
 import { Grade } from './entities/grade.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { SubmitTask } from 'src/submit-task/entities/submit-task.entity';
-
 
 @Injectable()
 export class GradeService {
@@ -134,17 +133,17 @@ export class GradeService {
 
     await this.gradeRepository.remove(grade);
   }
-  
-  async findGradeOfTask(idSubmit:string, user:User){
-     const grade = await this.gradeRepository.findOne({
-        where: {
-          taskSubmitted: { id: idSubmit},
-          student: {id: user.id}
-        }
-      })
 
-      if(!grade) throw new NotFoundException(`No available grade`)
+  async findGradeOfTask(idSubmit: string, user: User) {
+    const grade = await this.gradeRepository.findOne({
+      where: {
+        taskSubmitted: { id: idSubmit },
+        student: { id: user.id },
+      },
+    });
 
-      return grade;
+    if (!grade) throw new NotFoundException(`No available grade`);
+
+    return grade;
   }
 }

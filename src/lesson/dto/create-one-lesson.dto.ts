@@ -8,5 +8,12 @@ export class CreateOneLessonDto {
   @IsString()
   unit!: string;
 
+  @IsString()
+  description!:string
+
+  @IsString()
+  @IsOptional()
+  url_file!:string;
+
   //task?:string; // id del task
 }

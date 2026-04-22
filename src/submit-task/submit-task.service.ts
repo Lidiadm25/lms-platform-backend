@@ -1,16 +1,15 @@
 import {
-  BadRequestException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/entities/user.entity';
+import { Task } from 'src/tasks/entities/task.entity';
+import { Repository } from 'typeorm';
 import { CreateSubmitTaskDto } from './dto/create-submit-task.dto';
 import { UpdateSubmitTaskDto } from './dto/update-submit-task.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { SubmitTask } from './entities/submit-task.entity';
-import { Repository } from 'typeorm';
-import { Task } from 'src/tasks/entities/task.entity';
-import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class SubmitTaskService {
@@ -100,6 +99,24 @@ export class SubmitTaskService {
       tasks: result[0],
       count: result[1],
     };
+  }
+
+  async findByUserTask(userId: string, taskId: string) {
+    const result = await this.submitRepository.findOne({
+      where: {
+        student: {
+          id: userId,
+        },
+        task: {
+          id: taskId,
+        },
+      },
+    });
+
+    if (!result)
+      throw new NotFoundException(`No task found from user with id ${userId}`);
+
+    return result;
   }
 
   // todo sacar grades

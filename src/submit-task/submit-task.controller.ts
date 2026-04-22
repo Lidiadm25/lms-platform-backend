@@ -1,24 +1,23 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Req,
+  Get,
+  Param,
+  Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
-import { SubmitTaskService } from './submit-task.service';
-import { CreateSubmitTaskDto } from './dto/create-submit-task.dto';
-import { UpdateSubmitTaskDto } from './dto/update-submit-task.dto';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { User } from 'src/auth/entities/user.entity';
-import { RoleProtected } from 'src/auth/decorators/role-protected.decorator';
-import { ValidRoles } from 'src/auth/interfaces/validRoles';
-import { UserRoleGuard } from 'src/auth/guards/user-role/user-role.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { Auth } from 'src/auth/decorators/auth.decorator';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { RoleProtected } from 'src/auth/decorators/role-protected.decorator';
+import { User } from 'src/auth/entities/user.entity';
+import { UserRoleGuard } from 'src/auth/guards/user-role/user-role.guard';
+import { ValidRoles } from 'src/auth/interfaces/validRoles';
+import { CreateSubmitTaskDto } from './dto/create-submit-task.dto';
+import { UpdateSubmitTaskDto } from './dto/update-submit-task.dto';
+import { SubmitTaskService } from './submit-task.service';
 
 @Controller('submit-task')
 export class SubmitTaskController {
@@ -45,20 +44,25 @@ export class SubmitTaskController {
   }
 
   @Get('/user/:id')
-
   findTasksUser(@Param('id') id: string) {
     return this.submitTaskService.findByUser(id);
   }
 
   @Get('/task/:id')
-    @Auth()
-  findSubmitByTask(@Param('id') id:string, @GetUser() user: User)
-  {
-    console.log("aa");
-    
-   return this.submitTaskService.findByTask(id, user);
+  @Auth()
+  findSubmitByTask(@Param('id') id: string, @GetUser() user: User) {
+    console.log('aa');
+
+    return this.submitTaskService.findByTask(id, user);
   }
-  
+
+  @Get('review-task/:idUser/:idTask')
+  findSubmitOfUserByTask(
+    @Param('idUser') id: string,
+    @Param('idTask') idTask: string,
+  ) {
+    return this.submitTaskService.findByUserTask(id, idTask);
+  }
 
   @Patch(':id')
   update(
