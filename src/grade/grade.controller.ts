@@ -38,7 +38,7 @@ export class GradeController {
     All the grades from current user and a specific project
   */
   @Get(':idProject')
-  @Auth(ValidRoles.user)
+  @Auth()
   @UseGuards(AuthGuard())
   findOne(@Param('idProject') id: string, @GetUser() user: User) {
     return this.gradeService.findAllProject(id, user);

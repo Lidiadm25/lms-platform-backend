@@ -67,26 +67,19 @@ export class GradeService {
   }
 
   async findAllProject(idProject: string, user: User) {
-    const grades = await this.gradeRepository.find({
-      relations: {
-        project: true,
-        student: true,
-      },
-      where: {
-        project: {
-          id: idProject,
-        },
-        student: {
-          id: user.id,
-        },
-      },
-    });
+    console.log(idProject)
+    console.log(user.id)
+    const grades = await this.gradeRepository.createQueryBuilder('grades')
+    .select("grades", "task")
+    .leftJoinAndSelect("grades.taskSubmitted", "taskSubmitted")
+    .leftJoinAndSelect("taskSubmitted.task", "tasks")
 
-    if (!grades || grades.length == 0) {
-      throw new NotFoundException(`Couldn't find any grades`);
-    }
+    .where("grades.project = :id", {id: idProject})  
+    .andWhere("grades.student.id = :user", {user: user.id})
+    
+    .getRawMany()
 
-    return { grades };
+    return grades;
   }
 
   findOne(id: string) {
