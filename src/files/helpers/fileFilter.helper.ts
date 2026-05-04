@@ -3,7 +3,7 @@ export const fileFilter = (req:Express.Request, file: Express.Multer.File, callb
     if (!file) return callback(new Error('File is empty'), false);
 
     const fileExtension = file.mimetype.split('/')[1];
-    const validExtensions = ['jpg','jpeg','png','gif'];
+    const validExtensions = ['jpg','jpeg','png','gif', 'pdf', 'zip'];
 
     if (validExtensions.includes( fileExtension))  {
 

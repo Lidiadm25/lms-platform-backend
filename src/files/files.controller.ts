@@ -7,22 +7,27 @@ import {
   Post,
   Res,
   UploadedFile,
-  UseInterceptors
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import type { Response } from 'express';
 
 import { ConfigService } from '@nestjs/config';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage, memoryStorage } from 'multer';
 import { FilesService } from './files.service';
 import { fileFilter } from './helpers/fileFilter.helper';
 import { fileNamer } from './helpers/fileNamer.helper';
+import { MaxUploadSizeGuard } from './max-upload-size/max-upload-size.guard';
+import { StorageService } from './storage/storage.service';
 
 @Controller('files')
 export class FilesController {
   constructor(
     private readonly filesService: FilesService,
     private readonly configService: ConfigService,
+    private readonly storageService: StorageService,
   ) {}
 
   @Get('project/:imageName')
@@ -34,11 +39,10 @@ export class FilesController {
 
     res.sendFile(path);
 
-    /*
-      res.status(403).json({
-        ok: false,
-        path: path
-      }) */
+    res.status(403).json({
+      ok: false,
+      path: path,
+    });
   }
 
   @Post('project')
@@ -78,15 +82,47 @@ export class FilesController {
     @Body('maxSize') size: number,
   ) {
     if (!file) {
-      throw new BadRequestException('No hay archivo ');
+      throw new BadRequestException(`No file was sent`);
     }
     const secureUrl = `${this.configService.get('HOST_API')}/files/project/${file.filename}`;
+
     if (file.size > +size) {
       this.filesService.deleteFile(file.filename);
       throw new BadRequestException(
         `File is over max size: ${file.size} > ${size} `,
       );
     }
+
     return { secureUrl };
+  }
+
+  @Post('bulk/:idTask')
+  @UseGuards(MaxUploadSizeGuard)
+  @UseInterceptors(
+    FilesInterceptor('documents', 10, {
+      // INTERCEPTOR PARA MULTIPLES ARCHIVOS
+      // fileFilter: fileFilter,
+      storage: memoryStorage(),
+
+      limits: { fileSize: 2e9 },
+    }),
+  )
+  async uploadFiles(
+    @Param('idTask') idTask: String,
+    @UploadedFiles() file: Array<Express.Multer.File>,
+  ) {
+    const currentProvider = this.storageService.getProvider();
+
+    const newFiles = await Promise.all(
+   
+      file.map(async (files) => {
+        const safeName = await this.storageService.uploadFile(files);
+
+        return safeName
+      }),
+
+    );
+
+    return newFiles;
   }
 }
