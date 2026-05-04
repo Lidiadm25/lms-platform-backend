@@ -26,7 +26,7 @@ export class Project {
   @Column({ type: 'varchar', default: '' }) // placeholder
   image!: string;
 
-  @Column({ type: 'varchar', nullable: false, length: 100 })
+  @Column({ type: 'longtext', nullable: false })
   description!: string;
 
   @Column({ type: 'integer', default: 105, nullable: false }) // TODO: utilizarlo como horas en vez de días

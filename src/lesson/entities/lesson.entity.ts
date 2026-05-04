@@ -18,7 +18,7 @@ export class Lesson {
   url_file?: string;
   @Column({ type: 'varchar', nullable: false, length: '50' })
   title!: string;
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'longtext', nullable: true })
   description!: string;
 
   @ManyToOne(() => Section, (section) => section.lessons, {
