@@ -1,17 +1,12 @@
-import { getRepositoryToken, InjectRepository } from '@nestjs/typeorm';
 import { Lesson } from 'src/lesson/entities/lesson.entity';
 import { Project } from 'src/project/entities/project.entity';
 
 import {
-  BeforeInsert,
   Column,
   Entity,
-  Generated,
-  getRepository,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
-  Repository,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 
 @Entity('sections')

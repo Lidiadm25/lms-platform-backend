@@ -60,21 +60,21 @@ export class SubmitTaskService {
   }
 
   async update(id: string, updateSubmitTaskDto: UpdateSubmitTaskDto) {
-    console.log(updateSubmitTaskDto.url_file);
+
 
     const submit = await this.findOne(id);
 
     if (!submit) {
       throw new NotFoundException(`The submit was not found`);
     }
-    submit.date_send = new Date();
+    
+    console.log(updateSubmitTaskDto.url_file)
+   const result = await this.submitRepository.update(id, {
+    url_file: updateSubmitTaskDto.url_file,
+    date_send: new Date()
+   })
 
-    const updated = await this.submitRepository.merge(
-      submit,
-      updateSubmitTaskDto,
-    );
-
-    return await this.submitRepository.save(updated);
+    return await this.submitRepository.findOne({where : { id: id}});
   }
 
   async remove(id: string) {
@@ -93,7 +93,7 @@ export class SubmitTaskService {
       relations: { task: true },
     });
 
-    console.log(result);
+    
 
     return {
       tasks: result[0],
@@ -121,15 +121,14 @@ export class SubmitTaskService {
 
   // todo sacar grades
   async findByTask(id: string, user: User) {
-    console.log('id: ' + id);
-    console.log('user : ' + user.id);
+    
 
     const submit = await this.submitRepository
       .createQueryBuilder('submit')
       .where('submit.task = :id', { id: id })
       .andWhere('submit.student = :idUser', { idUser: user.id })
       .getOne();
-    console.log(submit);
+   
     return submit;
   }
 }

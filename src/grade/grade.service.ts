@@ -67,8 +67,6 @@ export class GradeService {
   }
 
   async findAllProject(idProject: string, user: User) {
-    console.log(idProject)
-    console.log(user.id)
     const grades = await this.gradeRepository.createQueryBuilder('grades')
     .select("grades", "task")
     .leftJoinAndSelect("grades.taskSubmitted", "taskSubmitted")

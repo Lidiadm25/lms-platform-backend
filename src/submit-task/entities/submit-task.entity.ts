@@ -17,8 +17,8 @@ export class SubmitTask {
   @ManyToOne(() => User)
   student!: User;
 
-  @Column('varchar', {nullable: true})
-  url_file?: string;
+  @Column('json', {nullable: true})
+  url_file!: string[];
 
   @OneToOne(() => Grade, (grade) => grade.taskSubmitted, {nullable: true})
   grade!: Grade;

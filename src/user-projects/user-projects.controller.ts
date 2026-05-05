@@ -46,7 +46,6 @@ export class UserProjectsController {
 
   @Delete('bulk')
   deleteUsers(@Body() ids: string[]){
-    console.log("entra aquí")
     return this.service.bulkDelete(ids)
   }
 

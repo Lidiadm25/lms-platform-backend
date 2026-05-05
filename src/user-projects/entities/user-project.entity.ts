@@ -2,13 +2,10 @@ import { User } from 'src/auth/entities/user.entity';
 import { Project } from 'src/project/entities/project.entity';
 
 import {
-  AfterInsert,
-  AfterLoad,
-  AfterUpdate,
   Column,
   Entity,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 
 @Entity('users-projects')

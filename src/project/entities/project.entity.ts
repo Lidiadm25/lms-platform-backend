@@ -9,6 +9,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -41,7 +42,7 @@ export class Project {
   })
   units?: Section[];
 
-  @ManyToOne(() => Survey, (survey) => survey.projects)
+  @OneToOne(() => Survey, (survey) => survey.projects, {cascade:true, nullable:true})
   survey?: Survey;
 
   @OneToMany(() => UserProject, (userProject) => userProject.project, {

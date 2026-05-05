@@ -13,6 +13,8 @@ import { UsersProjectsModule } from 'src/user-projects/users-projects.module';
 import { ProjectModule } from 'src/project/project.module';
 import { AuthModule } from 'src/auth/auth.module';
 
+import { ConfigModule } from '@nestjs/config';
+
 @Module({
   controllers: [TasksController],
   providers: [TasksService, UserProjectsService],
@@ -23,8 +25,9 @@ import { AuthModule } from 'src/auth/auth.module';
     UsersProjectsModule,
     SubmitTaskModule,
     ProjectModule,
-    AuthModule
+    AuthModule,
+   ConfigModule
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, TasksService],
 })
 export class TasksModule {}

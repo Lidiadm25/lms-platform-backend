@@ -20,6 +20,11 @@ import { CategoryModule } from './category/category.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { FilesModule } from './files/files.module';
+import { SurveyUserModule } from './survey-user/survey-user.module';
+
+import { MessagesWsGatewayModule } from './messages-ws-gateway/messages-ws.gateway.module';
+
+
 
 @Module({
   imports: [
@@ -52,7 +57,13 @@ import { FilesModule } from './files/files.module';
       rootPath: join(__dirname,'..','public'),
     }),
 
-    FilesModule 
+    FilesModule,
+
+    SurveyUserModule,
+
+
+
+    MessagesWsGatewayModule 
   ],
 })
 export class AppModule {}

@@ -13,6 +13,7 @@ import { Survey } from 'src/survey/entities/survey.entity';
 import { UserProject } from 'src/user-projects/entities/user-project.entity';
 import { Project } from 'src/project/entities/project.entity';
 import { Grade } from 'src/grade/entities/grade.entity';
+import { SurveyUser } from 'src/survey-user/entities/survey-user.entity';
 
 @Entity('users')
 export class User {
@@ -51,6 +52,9 @@ export class User {
 
   @OneToMany(() => Survey, (survey) => survey.user_author)
   surveys!: Survey[];
+
+  @OneToMany(()=> SurveyUser, response => response.user)
+  response!:SurveyUser[];
 
   @OneToMany(() => Grade, (grade) => grade.teacher)
   grades_put!: Grade[];

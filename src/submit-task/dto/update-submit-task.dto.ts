@@ -4,8 +4,8 @@ import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateSubmitTaskDto extends PartialType(CreateSubmitTaskDto) {
 
-  @IsString()
+  
   @IsNotEmpty()
   @IsOptional()
-  url_file!: string;
+  url_file!: string[];
 }
