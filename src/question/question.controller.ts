@@ -20,9 +20,9 @@ export class QuestionController {
     return this.questionService.create(createQuestionDto);
   }
 
-  @Get()
-  findAll() {
-    return this.questionService.findAll();
+  @Get('/survey/:id')
+  findAll(@Param('id') id: string) {
+    return this.questionService.findAll(id);
   }
 
   @Get(':id')
