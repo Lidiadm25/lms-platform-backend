@@ -6,7 +6,8 @@ import { Question } from 'src/question/entities/question.entity';
 export class CreateSurveyDto {
 
   @IsNotEmpty()
-  @IsUUID()
+  @IsString()
+  
   idProject!:string;
 
   @Type(() => CreateQuestionDto)

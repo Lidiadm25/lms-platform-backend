@@ -32,7 +32,7 @@ export class SurveyController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.surveyService.findOne(+id);
+    return this.surveyService.findOne(id);
   }
 
   @Patch(':id')

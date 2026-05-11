@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSurveyDto } from './dto/create-survey.dto';
 import { UpdateSurveyDto } from './dto/update-survey.dto';
 import { User } from 'src/auth/entities/user.entity';
@@ -51,8 +51,12 @@ export class SurveyService {
     return `This action returns all survey`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} survey`;
+  async findOne(id: string) {
+    const survey = await this.surveyRepository.findOne({ where:{projects: {id: id}}, relations: {questions:true} })
+
+    if(!survey) throw new NotFoundException(`No survey found for this project`)
+
+    return survey;
   }
 
   update(id: number, updateSurveyDto: UpdateSurveyDto) {
