@@ -56,6 +56,9 @@ export class StorageService {
         file.size,
         { 'Content-Type': file.mimetype },
       );
+      
+     // url = await this.minioClient.presignedGetObject(this.bucket, file.originalname,20000)
+
     } else {
         url ='http://localhost:3000/api/files/project/'
          const path = join(__dirname, '../../../static/projects', file.filename);
