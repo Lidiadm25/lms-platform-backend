@@ -6,6 +6,7 @@ import { Survey } from 'src/survey/entities/survey.entity';
 import { UserProject } from 'src/user-projects/entities/user-project.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -23,6 +24,19 @@ export class Project {
 
   @ManyToOne(() => User, (user) => user.projects)
   author?: User;
+
+  @CreateDateColumn()
+  created_at !:  Date;
+
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  last_modified!: Date;
+
+  @Column({type: 'varchar'})
+  snippet!: string;
 
   @Column({ type: 'varchar', default: '' }) // placeholder
   image!: string;
@@ -42,7 +56,10 @@ export class Project {
   })
   units?: Section[];
 
-  @OneToOne(() => Survey, (survey) => survey.projects, {cascade:true, nullable:true})
+  @OneToOne(() => Survey, (survey) => survey.projects, {
+    cascade: true,
+    nullable: true,
+  })
   survey?: Survey;
 
   @OneToMany(() => UserProject, (userProject) => userProject.project, {
@@ -53,6 +70,6 @@ export class Project {
   @OneToMany(() => Grade, (grades) => grades.project)
   grades!: Grade[];
 
-  @Column({type: 'boolean', default:false})
-  isActive!:boolean;
+  @Column({ type: 'boolean', default: false })
+  isActive!: boolean;
 }
