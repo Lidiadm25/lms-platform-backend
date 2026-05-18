@@ -84,11 +84,9 @@ export class StorageService {
     } else {
       url = 'http://localhost:3000/api/files/projects/';
       const path = join(__dirname, '../../../static/projects', secureUrl);
-      console.log(path);
       await this.fs.writeFile(path, file.buffer);
       url = url + secureUrl;
     }
-    console.log(url);
     const newFile = this.fileRepository.create({
       originalName: file.originalname,
       key: secureUrl,
@@ -129,14 +127,12 @@ export class StorageService {
 
     for (const file of files) {
       const fileExtension = file.mimetype.split('/')[1];
-      console.log(fileExtension);
       if (!AllVailidExntesions.includes(fileExtension as any))
         throw new BadRequestException(`Not allowed file`);
     }
     const promises = files.map(async (file) => {
       const secureUrl = `${crypto.randomUUID()}-${file.originalname}`;
 
-      console.log(secureUrl);
       var url;
 
       if (this.provider === 'minio') {
@@ -160,8 +156,6 @@ export class StorageService {
         const path = join(__dirname, '../../../static/projects', secureUrl);
         await this.fs.writeFile(path, file.buffer);
         url = url + secureUrl;
-        console.log('url:');
-        console.log(url);
       }
 
       const newFile = this.fileRepository.create({
@@ -172,7 +166,6 @@ export class StorageService {
       });
 
       const saved = await this.fileRepository.save(newFile);
-      console.log(url);
       return {
         id: saved.id,
         originalName: saved.originalName,
