@@ -6,6 +6,7 @@ import { ProjectModule } from 'src/project/project.module';
 import { UserProject } from './entities/user-project.entity';
 import { UserProjectsController } from './user-projects.controller';
 import { UserProjectsService } from './user-projects.service';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
   controllers: [UserProjectsController],

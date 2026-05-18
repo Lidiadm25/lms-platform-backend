@@ -12,6 +12,7 @@ import { UserDtoProject } from './dtos/create-user-projects.dto';
 import { usersProjectsDto } from './dtos/create-users-project.dto';
 import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
 import { UserProject } from './entities/user-project.entity';
+import { StorageService } from 'src/files/storage/storage.service';
 
 @Injectable()
 export class UserProjectsService {
@@ -22,6 +23,7 @@ export class UserProjectsService {
     private readonly projectRepository: Repository<Project>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+  //  private readonly storageService : StorageService
   ) {}
 
   async getAllPerProject(id: string, paginationDto: PaginationDto | null) {
@@ -155,19 +157,19 @@ export class UserProjectsService {
     
     const date = new Date();
     date.setDate(date.getDate() + project!.duration);
-    const inscripted = await this.userProjectRepository.findOneBy({user: {
-      id: dto.userId
-    }})
+    // const inscripted = await this.userProjectRepository.findOneBy({user: {
+    //   id: dto.userId
+    // }})
 
      const newUser = this.userProjectRepository.create({
       user: { id: user!.id },
       project: { id: dto.projectId },
       end_date: date,
     });
-    if(inscripted) {
-     const updated = this.userProjectRepository.merge(inscripted, newUser )
-    return  this.userProjectRepository.save(updated)
-    }
+    // if(inscripted) {
+    //  const updated = this.userProjectRepository.merge(inscripted, newUser )
+    // return  this.userProjectRepository.save(updated)
+    // }
     return await this.userProjectRepository.save(newUser);
   }
 
@@ -236,7 +238,9 @@ export class UserProjectsService {
       await this.userProjectRepository.findAndCount({
         where: { user: { id: id }, end_date: MoreThan(now) },
         relations: {
-          project: true,
+          project: {
+            image: true
+          }
         },
         select: {
           project: true,
@@ -244,6 +248,26 @@ export class UserProjectsService {
       });
     if (!projectsResult)
       throw new NotFoundException(`No projects found for the user`);
+
+
+        // const projects = await Promise.all(
+        //   projectsResult.map(async (project) => {
+        //     var imageUrl: string | undefined = undefined;
+        //     if (project.project.image) {
+        //       imageUrl = await this.storageService.getFileUrl(project.project.image.key);
+        //     }
+    
+          
+        //     return {
+        //       ...project,
+        //       project: {
+        //         imageUrl:  project.project.image ? { ...project.project.image, url: imageUrl } : null
+        //       }
+              
+        //     };
+        //   }),
+        // );
+    
 
     return {
       count: count,

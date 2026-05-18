@@ -55,9 +55,9 @@ export class ProjectService {
       paginationDto.limit = 9;
     }
 
-    if (query.trim().length > 0) {
-      query = '%' + query.trim() + '%';
-    }
+    // if (query.trim().length > 0) {
+    //   query = '%' + query.trim() + '%';
+    // }
 
     let querySQL = await this.projectRepository
       .createQueryBuilder('projects')
@@ -78,7 +78,7 @@ export class ProjectService {
     }
 
     if (query.trim().length) {
-      querySQL.andWhere('title like :query', { query });
+      querySQL.andWhere('title like :query', { query: `%${query}%` });
     }
 
     const [results, count] = await querySQL.getManyAndCount();
