@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/entities/user.entity';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { Project } from 'src/project/entities/project.entity';
-import { In, Repository } from 'typeorm';
+import { In, MoreThan, Repository } from 'typeorm';
 import { UserDtoProject } from './dtos/create-user-projects.dto';
 import { usersProjectsDto } from './dtos/create-users-project.dto';
 import { UpdatedUserDtoProject } from './dtos/update-user-projects.dto';
@@ -52,6 +52,61 @@ export class UserProjectsService {
       total: totalUsers,
       users,
     };
+  }
+
+  async finishAll(user: User) {
+    const result = await this.userProjectRepository
+      .createQueryBuilder('admin')
+      .update()
+      .set({ end_date: new Date() })
+      .where('user.id = :id', { id: user.id })
+      .execute();
+  }
+
+  // Número de estudiantes ''activos''
+  async getAllStudents(user: User) {
+    const result = await this.userProjectRepository
+      .createQueryBuilder('students')
+      .leftJoin('students.project', 'project')
+      .leftJoin('project.author', 'author')
+      .where('project.author.id = :id', { id: user.id })
+      .andWhere('students.end_date <:date ', { date: new Date() })
+      .select('students.user')
+      .getRawMany();
+
+    return result;
+  }
+
+  // Número de estudiantes de todos los cursos / activos e inactivos
+
+  async getAllStudentsEver(user: User) {
+    const result = await this.userProjectRepository
+      .createQueryBuilder('students')
+      .leftJoin('students.project', 'project')
+      .leftJoin('project.author', 'author')
+      .where('project.author.id = :id', { id: user.id })
+
+      .select('students.user')
+      .execute();
+
+    return result.length;
+  }
+
+  async getAll(id: string) {
+    const project = await this.projectRepository.findOneBy({ id: id });
+
+    if (!project) {
+      throw new NotFoundException(`Project not found`);
+    }
+
+    const users = await this.userProjectRepository
+      .createQueryBuilder('users-projects')
+      .leftJoinAndSelect('users-projects.project', 'project')
+      .leftJoinAndSelect('users-projects.user', 'user')
+      .where('project.id = :id', { id })
+      .getMany();
+
+    return users;
   }
 
   async queryDependingUserData(
@@ -154,10 +209,13 @@ export class UserProjectsService {
     return await this.userProjectRepository.delete({ id: In(ids) });
   }
 
-  async update(id: string, pId: string, dto: UpdatedUserDtoProject) {
-    const user_pro = await this.userProjectRepository.findOneBy({
-      user: { id: id },
-      project: { id: pId },
+  async update(pId: string, user: User, dto: UpdatedUserDtoProject) {
+    const user_pro = await this.userProjectRepository.findOne({
+      where: {
+        user: user,
+        project: { id: pId },
+      },
+      loadRelationIds: true,
     });
 
     if (!user_pro) {
@@ -165,19 +223,17 @@ export class UserProjectsService {
     }
 
     const updated = await this.userProjectRepository.merge(user_pro, dto);
-
     return await this.userProjectRepository.save(updated);
   }
 
-  // Todo check pagination
   async projectsPerUser(id: string) {
     const user = await this.userRepository.findBy({ id: id });
 
     if (!user) throw new NotFoundException(`User not found`);
-
+    const now = new Date();
     const [projectsResult, count] =
       await this.userProjectRepository.findAndCount({
-        where: { user: { id: id } },
+        where: { user: { id: id }, end_date: MoreThan(now) },
         relations: {
           project: true,
         },
@@ -193,5 +249,17 @@ export class UserProjectsService {
       pages: Math.ceil(count / 6),
       projects: projectsResult,
     };
+  }
+
+  async checkEnroll(user: User, id: string): Promise<boolean> {
+    const count = await this.userProjectRepository.count({
+      where: {
+        project: { id: id },
+        user: { id: user.id },
+        end_date: MoreThan(new Date()),
+      },
+    });
+
+    return count > 0;
   }
 }
