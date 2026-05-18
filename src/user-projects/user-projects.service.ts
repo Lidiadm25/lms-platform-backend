@@ -30,7 +30,6 @@ export class UserProjectsService {
     if (paginationDto) {
       var { limit = 10, offset = 0 } = paginationDto;
     }
-
     const project = await this.projectRepository.findOneBy({ id: id });
 
     if (!project) {
@@ -137,16 +136,8 @@ export class UserProjectsService {
   }
 
   async create(dto: UserDtoProject) {
-    // Verificate its not already asigned
-    if ((await this.queryDependingUserData(dto)) == true || undefined) {
-      throw new BadRequestException(
-        `The user is already asigned to the project`,
-      );
-    }
 
-    /*
-        PARA CALCULAR LA DURACIÓN DEL CURSO
-        */
+
     const project = await this.projectRepository.findOneBy({
       id: dto.projectId,
     });
@@ -158,15 +149,25 @@ export class UserProjectsService {
     if (!user || !project) {
       throw new NotFoundException(`Project or user not found with given data`);
     }
+
+
+    // verificar que se ha vuelto a meter
+    
     const date = new Date();
     date.setDate(date.getDate() + project!.duration);
+    const inscripted = await this.userProjectRepository.findOneBy({user: {
+      id: dto.userId
+    }})
 
-    const newUser = this.userProjectRepository.create({
+     const newUser = this.userProjectRepository.create({
       user: { id: user!.id },
       project: { id: dto.projectId },
       end_date: date,
     });
-
+    if(inscripted) {
+     const updated = this.userProjectRepository.merge(inscripted, newUser )
+    return  this.userProjectRepository.save(updated)
+    }
     return await this.userProjectRepository.save(newUser);
   }
 
