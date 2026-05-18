@@ -25,21 +25,8 @@ export class QuestionController {
     return this.questionService.findAll(id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.questionService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateQuestionDto: UpdateQuestionDto,
-  ) {
-    return this.questionService.update(+id, updateQuestionDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.questionService.remove(+id);
+  @Get(':idProject/avg')
+  getAvgPerQuesiton(@Param('idProject') id: string) {
+    return this.questionService.getAvg(id);
   }
 }
