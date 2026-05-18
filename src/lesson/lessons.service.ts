@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isUUID } from 'class-validator';
@@ -10,6 +10,8 @@ import { Repository } from 'typeorm';
 import { CreateOneLessonDto } from './dto/create-one-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { Lesson } from './entities/lesson.entity';
+import { StorageService } from 'src/files/storage/storage.service';
+import { Files } from 'src/files/entities/file.entity';
 
 @Injectable()
 export class LessonsService {
@@ -18,9 +20,15 @@ export class LessonsService {
     private readonly lessonRepository: Repository<Lesson>,
     @InjectRepository(Section)
     private readonly sectionRepository: Repository<Section>,
+    private readonly storageService: StorageService,
+    @InjectRepository(Files)
+    private readonly filesRepository: Repository<Files>,
   ) {}
 
-  async create(createOneLessonDto: CreateOneLessonDto) {
+  async create(
+    createOneLessonDto: CreateOneLessonDto,
+    files?: Express.Multer.File[],
+  ) {
     // Búsqueda por sección
     const section = await this.sectionRepository.findOneBy({
       id: createOneLessonDto.unit,
@@ -31,19 +39,21 @@ export class LessonsService {
       );
     }
 
-    // Create para que no se guarde como dto
-
     const lesson = this.lessonRepository.create({
       ...createOneLessonDto,
       unit: section,
     });
+    const saved = await this.lessonRepository.save(lesson);
 
-    return await this.lessonRepository.save(lesson);
+    if (files && files.length > 0) {
+      const uploadFiles = await this.storageService.uploadMultipleFiles(files);
+      const ids = uploadFiles.map((file) => file.id);
+      await this.filesRepository.update(ids, { lesson: saved });
+    }
+
+    return this.findOne(saved.id);
   }
 
-  /*findAll() {
-    return `This action returns all lessons`;
-  } */
 
   async findOne(id: string) {
     let lesson!: Lesson | null;
@@ -51,7 +61,7 @@ export class LessonsService {
     if (isUUID(id)) {
       lesson = await this.lessonRepository.findOne({
         where: { id: id },
-        relations: { tasks: true },
+        relations: { tasks: true, url_file: true },
       });
     }
 
@@ -80,7 +90,11 @@ export class LessonsService {
     return lessons;
   }
 
-  async update(id: string, updateLessonDto: UpdateLessonDto) {
+  async update(
+    id: string,
+    updateLessonDto: UpdateLessonDto,
+    files?: Express.Multer.File[],
+  ) {
     if (updateLessonDto.id && updateLessonDto.id !== id) {
       throw new BadRequestException(`Lesson ID is not valid`);
     }
@@ -91,9 +105,15 @@ export class LessonsService {
       throw new NotFoundException(`Lesson with id ${id} not found `);
     }
 
-    const updated = await this.lessonRepository.merge(lesson, updateLessonDto);
+    const updated = this.lessonRepository.merge(lesson, updateLessonDto);
+    const saved = await this.lessonRepository.save(updated);
+    if (files && files.length > 0) {
+      const uploadFiles = await this.storageService.uploadMultipleFiles(files);
+      const ids = uploadFiles.map((file) => file.id);
+      await this.filesRepository.update(ids, { lesson: saved });
+    }
 
-    return await this.lessonRepository.save(updated);
+    return this.findOne(id);
   }
 
   async remove(id: string) {
@@ -102,7 +122,6 @@ export class LessonsService {
     if (!lesson) {
       throw new NotFoundException(`Lesson with id ${id} not found `);
     }
-
     await this.lessonRepository.remove(lesson);
   }
 }
