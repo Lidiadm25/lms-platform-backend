@@ -17,17 +17,18 @@ Backend used for project InnovaLearn, a LMS platform still in development for on
 
 ## 📌 TODO LIST
 
-- Fix the retrieval of urls when file system is used instead of minio
-- Task creation only works if there's students since when a task is created, it automatically creates the submissions for the assigned students
+- Fix the retrieval of urls when file system is used instead of minio.
+- Task creation only works if there's students since when a task is created, it automatically creates the submissions for the assigned students.
   * Simply reconsider if this is logical to do considering the main idea of the project.
-- Keycloak and google auth
-- Refactor of dtos and the information sent back from the server
+- Keycloak and google auth.
+- Refactor of dtos and the information sent back from the server.
 - Proper management of errors.
+- In UserProjects - retrieve the url of the image dynamically.
 
 ## How to deploy
-1.- Clone project
-2.- npm install
-3.- Clone env.template and rename it to .env
-4.- Change enviroment variables, specially STORAGE_PROVIDER depending if you're using the file system of minio ('local' | 'minio')
-5.- Deploy database with docker-compose up -d
-6.- Use npm run start:dev
+1.- Clone project.  
+2.- npm install.
+3.- Clone env.template and rename it to .env.
+4.- Change enviroment variables, specially STORAGE_PROVIDER depending if you're using the file system of minio ('local' | 'minio').
+5.- Deploy database with docker-compose up -d.
+6.- Use npm run start:dev.
