@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsBoolean,
@@ -8,7 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateCategoryDto } from 'src/category/dto/create-category.dto';
-import { Category } from 'src/category/entities/category.entity';
+
 import { CreateSectionDto } from 'src/section/dto/create-section.dto';
 import { Section } from 'src/section/entities/section.entity';
 
@@ -26,18 +26,16 @@ export class CreateProjectDto {
   @ValidateNested()
   @IsOptional()
   units!: Section[];
-  
-  @IsString()
-  @IsOptional()
-  image!: string;
 
   @Type(() => CreateCategoryDto)
   @IsString()
   category!: CreateCategoryDto;
 
+  @Transform(
+    ({ value }) =>
+      value === 'true' || value === true || value === 1 || value === '1',
+  )
   @IsBoolean()
   @IsOptional()
   isActive!: boolean;
-
-
 }

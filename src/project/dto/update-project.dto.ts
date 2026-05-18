@@ -1,6 +1,12 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateProjectDto } from './create-project.dto';
-import { IsBoolean, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MinLength,
+} from 'class-validator';
 
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {
   @IsString()
@@ -12,12 +18,8 @@ export class UpdateProjectDto extends PartialType(CreateProjectDto) {
   @IsOptional()
   @MinLength(1)
   description?: string;
-  @IsString()
-  @IsOptional()
-  image?:string
 
   @IsBoolean()
   @IsOptional()
-  isActive?:boolean;
-
+  isActive?: boolean;
 }
