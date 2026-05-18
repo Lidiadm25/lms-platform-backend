@@ -1,12 +1,14 @@
 import { User } from 'src/auth/entities/user.entity';
+import { Files } from 'src/files/entities/file.entity';
 import { Grade } from 'src/grade/entities/grade.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity('submit')
@@ -17,10 +19,10 @@ export class SubmitTask {
   @ManyToOne(() => User)
   student!: User;
 
-  @Column('json', {nullable: true})
-  url_file!: string[];
+  @OneToMany(() => Files, (file) => file.submit)
+  url_file!: Files[];
 
-  @OneToOne(() => Grade, (grade) => grade.taskSubmitted, {nullable: true})
+  @OneToOne(() => Grade, (grade) => grade.taskSubmitted, { nullable: true })
   grade!: Grade;
 
   @ManyToOne(() => Task, (task) => task.submissions, { onDelete: 'CASCADE' })
@@ -34,7 +36,6 @@ export class SubmitTask {
     left_time!:number;
     */
 
- 
   // @BeforeUpdate()
   // updateDates() {
   //   this.date_send = new Date();

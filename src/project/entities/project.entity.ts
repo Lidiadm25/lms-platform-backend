@@ -1,5 +1,6 @@
 import { User } from 'src/auth/entities/user.entity';
 import { Category } from 'src/category/entities/category.entity';
+import { Files } from 'src/files/entities/file.entity';
 import { Grade } from 'src/grade/entities/grade.entity';
 import { Section } from 'src/section/entities/section.entity';
 import { Survey } from 'src/survey/entities/survey.entity';
@@ -8,6 +9,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -26,7 +28,7 @@ export class Project {
   author?: User;
 
   @CreateDateColumn()
-  created_at !:  Date;
+  created_at!: Date;
 
   @Column({
     type: 'timestamp',
@@ -35,11 +37,12 @@ export class Project {
   })
   last_modified!: Date;
 
-  @Column({type: 'varchar'})
-  snippet!: string;
+  // @Column({type: 'varchar'})
+  // snippet!: string;
 
-  @Column({ type: 'varchar', default: '' }) // placeholder
-  image!: string;
+  @OneToOne(() => Files, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn()
+  image?: Files;
 
   @Column({ type: 'longtext', nullable: false })
   description!: string;
