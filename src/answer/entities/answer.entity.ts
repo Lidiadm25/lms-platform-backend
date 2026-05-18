@@ -14,12 +14,13 @@ export class Answer {
 
   @ManyToOne(() => Question, (question) => question.answers, {
     cascade: ['insert'],
+    onDelete: 'CASCADE',
   })
   questions!: Question;
 
   @Column('int')
   rating!: number;
 
-  @ManyToOne(() => SurveyUser, (response) => response.answers)
+  @ManyToOne(() => SurveyUser, (response) => response.answers, {onDelete: 'CASCADE'})
   response!: SurveyUser;
 }

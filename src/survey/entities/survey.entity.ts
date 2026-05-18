@@ -27,7 +27,7 @@ export class Survey {
   @OneToMany(() => SurveyUser, (response) => response.survey)
   responses!: SurveyUser[];
 
-  @OneToOne(() => Project, (project) => project.survey)
+  @OneToOne(() => Project, (project) => project.survey, { onDelete: 'CASCADE' })
   @JoinColumn()
   projects!: Project;
 

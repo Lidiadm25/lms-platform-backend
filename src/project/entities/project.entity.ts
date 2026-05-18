@@ -60,7 +60,7 @@ export class Project {
   units?: Section[];
 
   @OneToOne(() => Survey, (survey) => survey.projects, {
-    cascade: true,
+    
     nullable: true,
   })
   survey?: Survey;

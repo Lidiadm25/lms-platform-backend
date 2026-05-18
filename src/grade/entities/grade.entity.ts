@@ -26,7 +26,7 @@ export class Grade {
   @JoinColumn() // owns the relationship
   taskSubmitted!: SubmitTask;
 
-  @ManyToOne(() => Project, (project) => project.grades)
+  @ManyToOne(() => Project, (project) => project.grades, { onDelete: 'CASCADE' })
   project!: Project;
   @Column('int')
   total!: number;

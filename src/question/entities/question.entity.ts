@@ -17,7 +17,7 @@ export class Question {
   @Column('varchar', { nullable: false })
   title!: string;
 
-  @ManyToOne(() => Survey, (survey) => survey.questions)
+  @ManyToOne(() => Survey, (survey) => survey.questions, {onDelete:'CASCADE'})
   survey!: Survey;
 
   @OneToMany(() => Answer, (answer) => answer.questions)

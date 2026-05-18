@@ -18,7 +18,7 @@ export class SurveyUser {
   @ManyToOne(() => User, (user) => user.response)
   user!: User;
 
-  @ManyToOne(() => Survey, (survey) => survey.responses)
+  @ManyToOne(() => Survey, (survey) => survey.responses, {onDelete:'CASCADE'})
   survey!: Survey;
 
   @OneToMany(() => Answer, (answer) => answer.response, { cascade: true })
