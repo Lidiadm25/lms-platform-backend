@@ -8,15 +8,17 @@ import { TasksModule } from 'src/tasks/tasks.module';
 import { PassportModule } from '@nestjs/passport';
 
 import { ConfigModule } from '@nestjs/config';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
   controllers: [SubmitTaskController],
   providers: [SubmitTaskService],
   imports: [
     TypeOrmModule.forFeature([SubmitTask]),
-    forwardRef(()=> TasksModule),
+    forwardRef(() => TasksModule),
     ConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    FilesModule,
   ],
   exports: [TypeOrmModule],
 })
