@@ -63,9 +63,6 @@ export class TasksService {
     return;
   }
 
-  findAll() {
-    return `This action returns all tasks`;
-  }
 
   async findAllByLesson(id: string) {
     const task = await this.taskRepository.find({

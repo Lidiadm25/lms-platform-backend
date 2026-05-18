@@ -30,10 +30,6 @@ export class TasksController {
     return this.tasksService.create(createTaskDto, user);
   }
 
-  @Get()
-  findAll() {
-    return this.tasksService.findAll();
-  }
 
   @Get('/lesson-id/:id')
   findByLesson(@Param('id') id: string) {

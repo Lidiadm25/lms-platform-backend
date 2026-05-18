@@ -138,7 +138,7 @@ export class SubmitTaskService {
         },
       },
     });
-    console.log(result[0]);
+
 
     return {
       tasks: result[0],
@@ -169,7 +169,7 @@ export class SubmitTaskService {
         file.url = await this.storageService.getFileUrl(file.key);
       }
     }
-    console.log(result);
+ 
     return result;
   }
 

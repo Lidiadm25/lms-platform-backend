@@ -173,8 +173,7 @@ export class ProjectService {
           imageUrl = await this.storageService.getFileUrl(project.image.key);
         }
 
-        console.log(project);
-
+      
         return {
           ...project,
           studentsCount: project.students ? project.students.length : 0,
@@ -183,7 +182,7 @@ export class ProjectService {
       }),
     );
 
-    console.log(projects);
+
 
     return {
       count: totalProjects,
