@@ -2,11 +2,13 @@ import { Lesson } from 'src/lesson/entities/lesson.entity';
 import { Project } from 'src/project/entities/project.entity';
 
 import {
+  AfterInsert,
+  AfterUpdate,
   Column,
   Entity,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity('sections')
@@ -18,9 +20,6 @@ export class Section {
   title!: string;
   @Column({ type: 'varchar', nullable: false, length: '50' })
   description!: string;
-
-  /*@Column({type: "int"})
-    order !: number;*/
 
   @ManyToOne(() => Project, (project) => project.units, { onDelete: 'CASCADE' })
   project!: Project;
@@ -39,4 +38,11 @@ export class Section {
     this.order = ultimo ? ultimo.order + 1 : 1;
   }
   */
+
+  // @AfterUpdate()
+  // @AfterInsert()
+  // updateLastModified(){
+  //   console.log(this)
+  //   this.project.last_modified = new Date();
+  // }
 }

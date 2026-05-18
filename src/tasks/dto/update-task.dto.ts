@@ -33,5 +33,5 @@ export class UpdateTaskDto extends PartialType(CreateTaskDto) {
   task_open!: Date;
 
   @IsNumber()
-  fileSize !:number;
+  fileSize!: number;
 }

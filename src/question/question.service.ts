@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateQuestionDto } from './dto/create-question.dto';
-import { UpdateQuestionDto } from './dto/update-question.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entities/question.entity';
 import { Repository } from 'typeorm';
@@ -12,11 +11,13 @@ export class QuestionService {
     @InjectRepository(Question)
     private readonly questionRepository: Repository<Question>,
     @InjectRepository(Survey)
-    private readonly surveyRepository : Repository<Survey>
+    private readonly surveyRepository: Repository<Survey>,
   ) {}
   async create(createQuestionDto: CreateQuestionDto) {
-    const survey = this.surveyRepository.findOneBy({id: createQuestionDto.surveyId})
-    if(!survey) throw new NotFoundException(`Survey not found`)
+    const survey = this.surveyRepository.findOneBy({
+      id: createQuestionDto.surveyId,
+    });
+    if (!survey) throw new NotFoundException(`Survey not found`);
 
     return await this.questionRepository.save(createQuestionDto);
   }
@@ -32,15 +33,18 @@ export class QuestionService {
     return questions;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} question`;
+  async getAvg(id: string) {
+    const results = await this.questionRepository
+      .createQueryBuilder('questions')
+      .leftJoin('questions.answers', 'answers')
+      .innerJoin('questions.survey', 'survey')
+      .select('questions.title', 'question')
+      .addSelect('ROUND(COALESCE(AVG(answers.rating),0),1) as avg')
+      .where('survey.projectsId = :surveyId', { surveyId: id })
+      .groupBy('questions.id')
+      .getRawMany();
+
+    return results;
   }
 
-  update(id: number, updateQuestionDto: UpdateQuestionDto) {
-    return `This action updates a #${id} question`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} question`;
-  }
 }

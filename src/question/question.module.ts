@@ -9,7 +9,10 @@ import { Survey } from 'src/survey/entities/survey.entity';
 @Module({
   controllers: [QuestionController],
   providers: [QuestionService],
-  imports: [TypeOrmModule.forFeature([Question]), forwardRef(()=> SurveyModule)],
-  exports: [TypeOrmModule]
+  imports: [
+    TypeOrmModule.forFeature([Question]),
+    forwardRef(() => SurveyModule),
+  ],
+  exports: [TypeOrmModule],
 })
 export class QuestionModule {}

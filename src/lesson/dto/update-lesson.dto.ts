@@ -14,10 +14,5 @@ export class UpdateLessonDto extends PartialType(CreateLessonDto) {
 
   @IsString()
   @IsOptional()
-  description!:string;
-
-  @IsString()
-  @IsOptional()
-  url_file!:string;
-
+  description!: string;
 }

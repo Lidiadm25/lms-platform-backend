@@ -24,8 +24,6 @@ import { SurveyUserModule } from './survey-user/survey-user.module';
 
 import { MessagesWsGatewayModule } from './messages-ws-gateway/messages-ws.gateway.module';
 
-
-
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -53,17 +51,15 @@ import { MessagesWsGatewayModule } from './messages-ws-gateway/messages-ws.gatew
     GradeModule,
     CategoryModule,
 
-    ServeStaticModule.forRoot({ 
-      rootPath: join(__dirname,'..','public'),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
     }),
 
     FilesModule,
 
     SurveyUserModule,
 
-
-
-    MessagesWsGatewayModule 
+    MessagesWsGatewayModule,
   ],
 })
 export class AppModule {}

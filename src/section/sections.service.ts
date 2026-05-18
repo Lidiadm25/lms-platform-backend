@@ -39,19 +39,20 @@ export class SectionsService {
     return await this.sectionRepository.save(newSection);
   }
 
-  /* findAll() {
-    return `This action returns all sections`;
-  } */
+  
 
   async findOne(id: string) {
-    const section = await this.sectionRepository.findOne({ where : {id: id }, relations: {
-      lessons: true
-    }});
+    const section = await this.sectionRepository.findOne({
+      where: { id: id },
+      relations: {
+        lessons: true,
+      },
+    });
 
     if (!section) {
       throw new NotFoundException(`The section with id ${id} is not found`);
     }
-    return section ;
+    return section;
   }
 
   async update(id: string, updateSectionDto: UpdateSectionDto) {

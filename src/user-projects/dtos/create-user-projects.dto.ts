@@ -12,5 +12,5 @@ export class UserDtoProject {
   @IsEmail()
   @IsNotEmpty()
   @IsOptional()
-  userEmail!:string;
+  userEmail!: string;
 }

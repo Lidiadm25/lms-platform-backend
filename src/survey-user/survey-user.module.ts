@@ -9,6 +9,6 @@ import { SurveyModule } from 'src/survey/survey.module';
 @Module({
   controllers: [SurveyUserController],
   providers: [SurveyUserService],
-   imports: [TypeOrmModule.forFeature([SurveyUser]), AuthModule, SurveyModule],
+  imports: [TypeOrmModule.forFeature([SurveyUser]), AuthModule, SurveyModule],
 })
 export class SurveyUserModule {}

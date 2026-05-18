@@ -1,12 +1,7 @@
 import { User } from 'src/auth/entities/user.entity';
 import { Project } from 'src/project/entities/project.entity';
 
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users-projects')
 export class UserProject {

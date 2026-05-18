@@ -1,15 +1,10 @@
 import { Type } from 'class-transformer';
 import {
   IsDate,
-  IsDateString,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
+  IsOptional
 } from 'class-validator';
 
 export class UpdatedUserDtoProject {
-  // recibe todo
-  // todo custom decorator
 
   @Type(() => Date)
   @IsDate()

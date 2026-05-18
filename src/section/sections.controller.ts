@@ -1,19 +1,17 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { SectionsService } from './sections.service';
-import { CreateSectionDto } from './dto/create-section.dto';
-import { UpdateSectionDto } from './dto/update-section.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { ValidRoles } from 'src/auth/interfaces/validRoles';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { User } from 'src/auth/entities/user.entity';
+import { CreateSectionDto } from './dto/create-section.dto';
+import { UpdateSectionDto } from './dto/update-section.dto';
+import { SectionsService } from './sections.service';
 
 @Controller('sections')
 export class SectionsController {
@@ -24,11 +22,6 @@ export class SectionsController {
   create(@Body() createSectionDto: CreateSectionDto) {
     return this.sectionsService.create(createSectionDto);
   }
-
-  /*@Get()
-  findAll() {
-    return this.sectionsService.findAll();
-  } */
 
   @Get(':id')
   findOne(@Param('id') id: string) {

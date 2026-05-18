@@ -46,10 +46,9 @@ export class GradeController {
 
   @Get('submit/:id')
   @Auth()
-    findGrade (@Param('id') id:string, @GetUser() user: User)
-    {
-      return this.gradeService.findGradeOfTask(id, user)
-    }
+  findGrade(@Param('id') id: string, @GetUser() user: User) {
+    return this.gradeService.findGradeOfTask(id, user);
+  }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateGradeDto: UpdateGradeDto) {
     return this.gradeService.update(id, updateGradeDto);

@@ -25,7 +25,7 @@ export class Task {
   @Column()
   description!: string;
 
-  @ManyToOne(() => Lesson, (lesson) => lesson.tasks, { onDelete: 'CASCADE'})
+  @ManyToOne(() => Lesson, (lesson) => lesson.tasks, { onDelete: 'CASCADE' })
   lesson_task!: Lesson;
 
   @OneToMany(() => SubmitTask, (sub) => sub.task, { cascade: true })
@@ -41,7 +41,7 @@ export class Task {
   task_close!: Date;
 
   @Column('int')
-  fileSize !: number;
+  fileSize!: number;
 
   @BeforeInsert()
   updateDates() {
@@ -50,15 +50,13 @@ export class Task {
 
   @BeforeUpdate()
   @BeforeInsert()
-  verifyDates(){
-    if(this.task_open && this.task_close){
-
-      if(this.task_open > this.task_close){
-        throw new BadRequestException(`Task dates`)
+  verifyDates() {
+    if (this.task_open && this.task_close) {
+      if (this.task_open > this.task_close) {
+        throw new BadRequestException(`Task dates`);
       }
     }
   }
-
 
   getActive(): boolean {
     if (this.task_close == null) {

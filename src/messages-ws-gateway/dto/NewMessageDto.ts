@@ -1,7 +1,4 @@
-
-
-export class NewMessageDto{
-   
-    message!: string;
-    user_id!: string;
+export class NewMessageDto {
+  message!: string;
+  user_id!: string;
 }

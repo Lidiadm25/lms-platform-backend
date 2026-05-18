@@ -36,5 +36,5 @@ export class Grade {
   max_range!: number;
 
   @Column('varchar')
-  feedback !: string;
+  feedback!: string;
 }

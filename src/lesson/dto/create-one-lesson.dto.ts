@@ -1,5 +1,4 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
-import { Section } from 'src/section/entities/section.entity';
+import { IsString } from 'class-validator';
 
 export class CreateOneLessonDto {
   @IsString()
@@ -9,11 +8,7 @@ export class CreateOneLessonDto {
   unit!: string;
 
   @IsString()
-  description!:string
-
-  @IsString()
-  @IsOptional()
-  url_file!:string;
+  description!: string;
 
   //task?:string; // id del task
 }

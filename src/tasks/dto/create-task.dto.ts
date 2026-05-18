@@ -1,4 +1,10 @@
-import { IsDate, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsDateString,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class CreateTaskDto {
   @IsString()
@@ -16,11 +22,11 @@ export class CreateTaskDto {
   @IsDateString()
   task_open!: Date;
   @IsDateString()
-  task_close!:Date;
+  task_close!: Date;
 
   @IsString()
-  idProject!:string;
+  idProject!: string;
 
-   @IsNumber()
-    fileSize !:number;
+  @IsNumber()
+  fileSize!: number;
 }

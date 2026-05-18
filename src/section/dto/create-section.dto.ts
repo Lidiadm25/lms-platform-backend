@@ -4,7 +4,7 @@ import {
   IsOptional,
   IsString,
   MinLength,
-  ValidateNested
+  ValidateNested,
 } from 'class-validator';
 import { CreateLessonDto } from 'src/lesson/dto/create-lesson.dto';
 

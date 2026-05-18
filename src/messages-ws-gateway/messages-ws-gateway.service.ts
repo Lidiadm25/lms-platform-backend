@@ -13,7 +13,7 @@ interface ConnectedClients {
 
 @Injectable()
 export class MessagesWsGatewayService {
-        private connectedClients: ConnectedClients = {}
+  private connectedClients: ConnectedClients = {};
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -33,18 +33,17 @@ export class MessagesWsGatewayService {
     };
   }
 
-
   removeClient(clientId: string) {
     delete this.connectedClients[clientId];
   }
 
   getConnectedClients() {
-    return Object.keys(this.connectedClients).map(clientId => {
+    return Object.keys(this.connectedClients).map((clientId) => {
       const client = this.connectedClients[clientId];
       return {
         user_id: client.user.id,
-        user_fullname: client.user.fullName
-      }
+        user_fullname: client.user.fullName,
+      };
     });
   }
 

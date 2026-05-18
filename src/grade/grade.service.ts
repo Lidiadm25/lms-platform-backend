@@ -67,15 +67,16 @@ export class GradeService {
   }
 
   async findAllProject(idProject: string, user: User) {
-    const grades = await this.gradeRepository.createQueryBuilder('grades')
-    .select("grades", "task")
-    .leftJoinAndSelect("grades.taskSubmitted", "taskSubmitted")
-    .leftJoinAndSelect("taskSubmitted.task", "tasks")
+    const grades = await this.gradeRepository
+      .createQueryBuilder('grades')
+      .select('grades', 'task')
+      .leftJoinAndSelect('grades.taskSubmitted', 'taskSubmitted')
+      .leftJoinAndSelect('taskSubmitted.task', 'tasks')
 
-    .where("grades.project = :id", {id: idProject})  
-    .andWhere("grades.student.id = :user", {user: user.id})
-    
-    .getRawMany()
+      .where('grades.project = :id', { id: idProject })
+      .andWhere('grades.student.id = :user', { user: user.id })
+
+      .getRawMany();
 
     return grades;
   }

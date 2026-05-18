@@ -26,5 +26,5 @@ export class CreateGradeDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  feedback!:string;
+  feedback!: string;
 }

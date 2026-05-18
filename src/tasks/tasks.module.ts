@@ -26,7 +26,7 @@ import { ConfigModule } from '@nestjs/config';
     SubmitTaskModule,
     ProjectModule,
     AuthModule,
-   ConfigModule
+    ConfigModule,
   ],
   exports: [TypeOrmModule, TasksService],
 })

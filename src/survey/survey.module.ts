@@ -10,7 +10,12 @@ import { SurveyService } from './survey.service';
 @Module({
   controllers: [SurveyController],
   providers: [SurveyService],
-  imports: [TypeOrmModule.forFeature([Survey]), AuthModule, ProjectModule, forwardRef(()=> QuestionModule)],
-  exports: [TypeOrmModule]
+  imports: [
+    TypeOrmModule.forFeature([Survey]),
+    AuthModule,
+    ProjectModule,
+    forwardRef(() => QuestionModule),
+  ],
+  exports: [TypeOrmModule],
 })
 export class SurveyModule {}
