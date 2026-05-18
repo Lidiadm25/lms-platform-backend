@@ -1,3 +1,5 @@
+import { url } from 'inspector';
+import { StorageService } from './../files/storage/storage.service';
 import {
   BadRequestException,
   Injectable,
@@ -22,44 +24,91 @@ export class ProjectService {
   constructor(
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
+    private storageService: StorageService,
   ) {}
-  async create(createProjectDto: CreateProjectDto, user: User) {
+  async create(
+    createProjectDto: CreateProjectDto,
+    user: User,
+    image?: Express.Multer.File,
+  ) {
+    var imageFile;
+    if (image) {
+      const upload = await this.storageService.uploadImage(image);
+      imageFile = { id: upload.id };
+    }
+
     try {
       const project = this.projectRepository.create({
         ...createProjectDto,
         author: user,
+        image: imageFile,
       });
-      await this.projectRepository.save(project);
-      return project;
+      const saved = await this.projectRepository.save(project);
+      return this.findOne(saved.id);
     } catch (error) {
       this.handleDBExceptions(error);
     }
   }
 
   async findFiltered(paginationDto: PaginationDto, query: string) {
-    query = '%' + query + '%';
-    const projects = await this.projectRepository
-      .createQueryBuilder('projects')
-      .where('title like :query', { query })
-      .getMany();
+    if (!paginationDto.limit) {
+      paginationDto.limit = 9;
+    }
 
-    if (!projects) {
+    if (query.trim().length > 0) {
+      query = '%' + query.trim() + '%';
+    }
+
+    let querySQL = await this.projectRepository
+      .createQueryBuilder('projects')
+      .take(paginationDto.limit)
+      .skip(paginationDto.offset)
+      .leftJoinAndSelect('projects.category', 'category')
+      .leftJoinAndSelect('projects.image', 'image')
+      .where('1=1');
+
+    // Check it has category
+    if (
+      paginationDto.category !== undefined &&
+      paginationDto.category.length != 0
+    ) {
+      querySQL.andWhere('category.id = :id', {
+        id: paginationDto.category,
+      });
+    }
+
+    if (query.trim().length) {
+      querySQL.andWhere('title like :query', { query });
+    }
+
+    const [results, count] = await querySQL.getManyAndCount();
+
+    if (!results) {
       throw new NotFoundException(`No project found`);
     }
 
-    if (paginationDto.limit == undefined) {
-      paginationDto.limit = 9;
-    }
-    const totalProjects = projects.length;
+    const projects = await Promise.all(
+      results.map(async (project) => {
+        var imageUrl: string | undefined = undefined;
+        if (project.image) {
+          imageUrl = await this.storageService.getFileUrl(project.image.key);
+        }
+
+        return {
+          ...project,
+          studentsCount: project.students ? project.students.length : 0,
+          image: project.image ? { ...project.image, url: imageUrl } : null,
+        };
+      }),
+    );
+
     return {
-      count: totalProjects,
-      pages: Math.ceil(totalProjects / paginationDto.limit),
+      count: count,
+      pages: Math.ceil(count / paginationDto.limit),
       projects,
     };
   }
 
-  // Returns all projects
-  // TODO divide in two services -> do the difference from controller
   async findAll(paginationDto: PaginationDto, user: User) {
     let projectsQuery: Project[] | undefined;
     let totalProjects: number = 0;
@@ -74,6 +123,7 @@ export class ProjectService {
         .leftJoinAndSelect('projects.students', 'students')
         .leftJoinAndSelect('projects.author', 'author')
         .leftJoinAndSelect('projects.category', 'category')
+        .leftJoinAndSelect('projects.image', 'files')
         .take(paginationDto.limit)
         .skip(paginationDto.offset)
         .orderBy('projects.title', 'DESC')
@@ -88,47 +138,58 @@ export class ProjectService {
           name: paginationDto.category,
         });
       }
-
-      try {
-        projectsQuery = await query.getMany();
-      } catch (error) {
-        throw error;
-      }
-      totalProjects = await query.getCount();
+      const [results, count] = await query.getManyAndCount();
+      projectsQuery = results;
+      totalProjects = count;
     } else {
       // Projects only admin created
-      [projectsQuery, totalProjects] =
-        await this.projectRepository.findAndCount({
-          take: paginationDto.limit,
-          skip: paginationDto.offset,
-          relations: {
-            units: true,
-            students: true,
-            author: true,
+      const [results, count] = await this.projectRepository.findAndCount({
+        take: paginationDto.limit,
+        skip: paginationDto.offset,
+        relations: {
+          units: true,
+          students: true,
+          author: true,
+          image: true,
+        },
+        order: {
+          title: 'DESC',
+        },
+        where: {
+          author: {
+            id: user.id,
           },
-          order: {
-            title: 'DESC',
-          },
-          where: {
-            author: {
-              id: user.id,
-            },
-          },
-        });
+        },
+      });
+
+      projectsQuery = results;
+      totalProjects = count;
     }
 
-    if (projectsQuery) {
-      const projects = projectsQuery.map((project) => ({
-        ...project,
-        studentsCount: project.students.length,
-      }));
+    const projects = await Promise.all(
+      projectsQuery.map(async (project) => {
+        var imageUrl: string | undefined = undefined;
+        if (project.image) {
+          imageUrl = await this.storageService.getFileUrl(project.image.key);
+        }
 
-      return {
-        count: totalProjects,
-        pages: Math.ceil(totalProjects / paginationDto.limit),
-        projects,
-      };
-    }
+        console.log(project);
+
+        return {
+          ...project,
+          studentsCount: project.students ? project.students.length : 0,
+          image: project.image ? { ...project.image, url: imageUrl } : null,
+        };
+      }),
+    );
+
+    console.log(projects);
+
+    return {
+      count: totalProjects,
+      pages: Math.ceil(totalProjects / paginationDto.limit),
+      projects,
+    };
   }
 
   // Returns a project by uuid and its sections/lessons
@@ -138,7 +199,7 @@ export class ProjectService {
     if (isUUID(id)) {
       project = await this.projectRepository.findOne({
         where: { id },
-        relations: ['units', 'units.lessons', 'author', 'category'],
+        relations: ['units', 'units.lessons', 'author', 'category', 'image'],
       });
     } else {
       project = null;
@@ -147,14 +208,35 @@ export class ProjectService {
     if (!project) {
       throw new NotFoundException(`Project with id: ${id} not found`);
     }
+
+    if (project.image) {
+      project.image.url = await this.storageService.getFileUrl(
+        project.image.key,
+      );
+    }
+
     return project;
   }
 
-  async update(id: string, updateProjectDto: UpdateProjectDto) {
-    const project = await this.projectRepository.findOneBy({ id: id });
+  async update(
+    id: string,
+    updateProjectDto: UpdateProjectDto,
+    image?: Express.Multer.File,
+  ) {
+    const project = await this.projectRepository.findOne({
+      where: { id: id },
+      relations: {
+        image: true,
+      },
+    });
 
     if (!project) {
       throw new NotFoundException(`Project with id ${id} not found`);
+    }
+
+    if (image) {
+      const upload = await this.storageService.uploadImage(image);
+      project.image = { id: upload.id } as any;
     }
 
     const updated = await this.projectRepository.merge(
@@ -162,7 +244,9 @@ export class ProjectService {
       updateProjectDto,
     );
 
-    return await this.projectRepository.save(updated);
+    const saved = await this.projectRepository.save(updated);
+
+    return this.findOne(saved.id);
   }
 
   async remove(id: string) {
