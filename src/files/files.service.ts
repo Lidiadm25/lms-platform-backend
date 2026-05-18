@@ -8,17 +8,15 @@ export class FilesService {
     const path = join(__dirname, '../../static/projects', imageName);
 
     if (!existsSync(path)) {
-      throw new BadRequestException(`No product found with image ${imageName}`);
+      throw new BadRequestException(`No file found with name: ${imageName}`);
     }
 
     return path;
   }
 
-  async deleteFile(fileName: string) {
-    console.log(fileName);
-    const path = join(__dirname, '../../static/projects', fileName);
-    console.log(path);
-    const fs = require('fs').promises;
-    await fs.unlink(path);
-  }
+  // async deleteFile(fileName: string) {
+  //   const path = join(__dirname, '../../static/projects', fileName);
+  //   const fs = require('fs').promises;
+  //   await fs.unlink(path);
+  // }
 }

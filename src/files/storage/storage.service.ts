@@ -1,9 +1,22 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as Minio from 'minio';
 import path, { join } from 'path';
-import * as Minio from 'minio'
-import { existsSync } from 'fs';
-import { url } from 'inspector';
+import { Repository } from 'typeorm';
+import { Files } from '../entities/file.entity';
+export const ValidExtensions = {
+  IMAGES: ['jpeg', 'png'],
+
+  DOCUMENTS: ['pdf', 'zip', 'rar', 'x-zip-compressed'],
+} as const;
+
+export type ImageExtension = (typeof ValidExtensions.IMAGES)[number];
+export type documentExtension = (typeof ValidExtensions.DOCUMENTS)[number];
+export const AllVailidExntesions = [
+  ...ValidExtensions.IMAGES,
+  ...ValidExtensions.DOCUMENTS,
+];
 
 @Injectable()
 export class StorageService {
@@ -11,12 +24,14 @@ export class StorageService {
   private bucket!: string;
   private provider!: string;
   private localPath!: string;
-   private fs = require('fs').promises;
+  private fs = require('fs').promises;
 
-  constructor(private configService: ConfigService) {
-    
+  constructor(
+    private configService: ConfigService,
+    @InjectRepository(Files)
+    private readonly fileRepository: Repository<Files>,
+  ) {
     this.provider = this.configService.get('STORAGE_PROVIDER') as string;
-
     if (this.provider === 'minio') {
       this.minioClient = new Minio.Client({
         endPoint: this.configService.get('MINIO_ENDPOINT') as string,
@@ -30,48 +45,141 @@ export class StorageService {
       this.localPath = path.join(process.cwd(), 'files');
       this.ensureLocalDirectoryExists();
     }
-   
   }
 
   async ensureLocalDirectoryExists() {
     try {
       await this.fs.access(this.localPath);
-      console.log(this.localPath)
     } catch (error) {
       await this.fs.mkdir(this.localPath, { recursive: true });
     }
   }
 
-  async uploadFile(file: Express.Multer.File): Promise<string> {
-   
+  async uploadImage(file: Express.Multer.File) {
+    if (!file) throw new Error('File is empty');
+    const fileExtension = file.mimetype.split('/')[1];
+
+    if (!ValidExtensions.IMAGES.includes(fileExtension as any))
+      throw new BadRequestException(`Wrong file extension`);
+    const secureUrl = `${crypto.randomUUID()}-${file.originalname}`;
+
     var url;
-    console.log(file)
+
     if (this.provider === 'minio') {
-        url = 'http://localhost:9000/bucket-files/';
-       
+      url = 'http://localhost:9000/bucket-files/';
+
       await this.minioClient.putObject(
         this.bucket,
-        file.originalname,
+        secureUrl,
         file.buffer,
         file.size,
         { 'Content-Type': file.mimetype },
       );
-      
-     // url = await this.minioClient.presignedGetObject(this.bucket, file.originalname,20000)
-
+      url = await this.minioClient.presignedGetObject(
+        this.bucket,
+        secureUrl,
+        2 * 60 * 60,
+      );
+      // url = await this.minioClient.presignedGetObject(this.bucket, file.originalname,20000)
     } else {
-        url ='http://localhost:3000/api/files/project/'
-         const path = join(__dirname, '../../../static/projects', file.filename);
-       
-            
-
+      url = 'http://localhost:3000/api/files/projects/';
+      const path = join(__dirname, '../../../static/projects', secureUrl);
+      console.log(path);
       await this.fs.writeFile(path, file.buffer);
+      url = url + secureUrl;
     }
-    const finalUrl = url + file.originalname
-    return finalUrl;
+    console.log(url);
+    const newFile = this.fileRepository.create({
+      originalName: file.originalname,
+      key: secureUrl,
+      mimeType: file.mimetype,
+      size: file.size,
+    });
+
+    const saved = await this.fileRepository.save(newFile);
+
+    return {
+      id: saved.id,
+      originalName: saved.originalName,
+      key: saved.key,
+      url: url,
+    };
   }
 
   getProvider() {
     return this.provider;
+  }
+
+  async getFileUrl(key: string) {
+    if (this.provider == 'minio') {
+      return await this.minioClient.presignedGetObject(
+        this.bucket,
+        key,
+        2 * 60 * 60,
+      );
+    }
+
+    return `http://localhost:3000/api/files/project/${key}`;
+  }
+
+  async uploadMultipleFiles(files: Express.Multer.File[]) {
+    if (!files || files.length < 0) {
+      throw new BadRequestException(`There's no files`);
+    }
+
+    for (const file of files) {
+      const fileExtension = file.mimetype.split('/')[1];
+      console.log(fileExtension);
+      if (!AllVailidExntesions.includes(fileExtension as any))
+        throw new BadRequestException(`Not allowed file`);
+    }
+    const promises = files.map(async (file) => {
+      const secureUrl = `${crypto.randomUUID()}-${file.originalname}`;
+
+      console.log(secureUrl);
+      var url;
+
+      if (this.provider === 'minio') {
+        url = 'http://localhost:9000/bucket-files/';
+
+        await this.minioClient.putObject(
+          this.bucket,
+          secureUrl,
+          file.buffer,
+          file.size,
+          { 'Content-Type': file.mimetype },
+        );
+        url = await this.minioClient.presignedGetObject(
+          this.bucket,
+          secureUrl,
+          2 * 60 * 60,
+        );
+        // url = await this.minioClient.presignedGetObject(this.bucket, file.originalname,20000)
+      } else {
+        url = 'http://localhost:3000/api/files/project/';
+        const path = join(__dirname, '../../../static/projects', secureUrl);
+        await this.fs.writeFile(path, file.buffer);
+        url = url + secureUrl;
+        console.log('url:');
+        console.log(url);
+      }
+
+      const newFile = this.fileRepository.create({
+        originalName: file.originalname,
+        key: secureUrl,
+        mimeType: file.mimetype,
+        size: file.size,
+      });
+
+      const saved = await this.fileRepository.save(newFile);
+      console.log(url);
+      return {
+        id: saved.id,
+        originalName: saved.originalName,
+        key: saved.key,
+        url: url,
+      };
+    });
+    return Promise.all(promises);
   }
 }
