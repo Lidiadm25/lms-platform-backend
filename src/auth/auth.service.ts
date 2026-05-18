@@ -5,16 +5,16 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import bcrypt from 'bcrypt';
-import { LoginUserDto } from './dto/login-user.dto';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import bcrypt from 'bcrypt';
 import { UserProject } from 'src/user-projects/entities/user-project.entity';
+import { Repository } from 'typeorm';
+import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
+import { User } from './entities/user.entity';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { ValidRoles } from './interfaces/validRoles';
 
 @Injectable()
 export class AuthService {
@@ -47,6 +47,15 @@ export class AuthService {
     }
   }
 
+  async changeRole(user: User) {
+    const userUpdated = this.userRepository.create({
+      ...user,
+      roles: [ValidRoles.admin],
+    });
+
+    return this.userRepository.save(userUpdated);
+  }
+
   private getJtwToken(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
@@ -76,7 +85,7 @@ export class AuthService {
     if (error.code === '23505') {
       throw new BadRequestException(error.detail);
     }
-    console.log(error);
+
     throw new InternalServerErrorException('Please check server logs');
   }
 

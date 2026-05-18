@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { ValidRoles } from 'src/auth/interfaces/validRoles';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Patch,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -13,7 +22,6 @@ export class AuthController {
 
   @Post('register')
   create(@Body() createUserDto: CreateUserDto) {
-    console.log('entrando a servicio');
     return this.authService.create(createUserDto);
   }
 
@@ -26,6 +34,12 @@ export class AuthController {
   @Auth()
   checkAuthStatus(@GetUser() user: User) {
     return this.authService.checkAuthStatus(user);
+  }
+
+  @Patch('be-teacher')
+  @Auth(ValidRoles.user)
+  beTeacher(@GetUser() user: User) {
+    return this.authService.changeRole(user);
   }
 
   @Get()
