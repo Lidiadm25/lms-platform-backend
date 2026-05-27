@@ -11,6 +11,7 @@ services:
       TZ: Europe/Madrid
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   minio-aistor:
     image: quay.io/minio/aistor/minio:latest
