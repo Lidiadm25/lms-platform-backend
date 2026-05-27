@@ -4,11 +4,11 @@ Backend for **InnovaLearn**, an LMS platform currently in development for access
 
 
 ## Preview 
-Database Entity-Relation diagram:
+- Database Entity-Relation diagram:
 ![Preview](./assets/ER.png)
-Serving files diagram:
+- Serving files diagram:
 ![Preview](./assets/Serving%20files.png)
-Structure of project:
+- Structure of project:
 ![Preview](./assets/Structure.png)
 
 ## ✨ Features
@@ -42,8 +42,9 @@ Structure of project:
 2. Run `npm install`.
 3. Copy `env.template` and rename it to `.env`.
 4. Configure the environment variables, especially `STORAGE_PROVIDER` depending on whether you are using the local file system or MinIO (`local` | `minio`).
-5. If you've chosen to use minIO, remember, you need to paste the license file into the root of the project! By default, the account tend to be:  user: minioadmin password: minioadmin
+5. If you've chosen to use minIO, remember, you need to paste the license file into the root of the project! By default, the account tend to be user: `minioadmin` password: `minioadmin`
 6. Start the database with:
 
    ```bash
    docker-compose up -d
+
