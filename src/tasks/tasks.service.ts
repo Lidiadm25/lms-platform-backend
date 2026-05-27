@@ -94,7 +94,8 @@ export class TasksService {
     return await this.taskRepository.save(updated);
   }
 
-  remove(id: number) {
+  remove(id: string) {
+    return this.taskRepository.delete(id);
     return `This action removes a #${id} task`;
   }
 }
