@@ -6,7 +6,7 @@ import path, { join } from 'path';
 import { Repository } from 'typeorm';
 import { Files } from '../entities/file.entity';
 export const ValidExtensions = {
-  IMAGES: ['jpeg', 'png'],
+  IMAGES: ['jpeg', 'png', 'jpg', 'gif', 'bmp', 'webp'],
 
   DOCUMENTS: ['pdf', 'zip', 'rar', 'x-zip-compressed'],
 } as const;
