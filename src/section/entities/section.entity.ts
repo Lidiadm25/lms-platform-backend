@@ -18,7 +18,7 @@ export class Section {
 
   @Column({ type: 'varchar', nullable: false, length: '50' })
   title!: string;
-  @Column({ type: 'varchar', nullable: false, length: '50' })
+  @Column({ type: 'varchar', nullable: false, length: '250' })
   description!: string;
 
   @ManyToOne(() => Project, (project) => project.units, { onDelete: 'CASCADE' })

@@ -22,7 +22,7 @@ export class Task {
 
   @Column()
   title!: string;
-  @Column()
+  @Column('longtext')
   description!: string;
 
   @ManyToOne(() => Lesson, (lesson) => lesson.tasks, { onDelete: 'CASCADE' })
