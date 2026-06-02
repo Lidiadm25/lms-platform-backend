@@ -23,8 +23,8 @@ export class UserProjectsService {
     private readonly projectRepository: Repository<Project>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  //  private readonly storageService : StorageService
-  ) {}
+    private readonly storageService: StorageService
+  ) { }
 
   async getAllPerProject(id: string, paginationDto: PaginationDto | null) {
     // Search that the project exists
@@ -154,14 +154,14 @@ export class UserProjectsService {
 
 
     // verificar que se ha vuelto a meter
-    
+
     const date = new Date();
     date.setDate(date.getDate() + project!.duration);
     // const inscripted = await this.userProjectRepository.findOneBy({user: {
     //   id: dto.userId
     // }})
 
-     const newUser = this.userProjectRepository.create({
+    const newUser = this.userProjectRepository.create({
       user: { id: user!.id },
       project: { id: dto.projectId },
       end_date: date,
@@ -240,35 +240,30 @@ export class UserProjectsService {
         relations: {
           project: {
             image: true
-          }
+          },
         },
-        select: {
-          project: true,
-        },
+
       });
     if (!projectsResult)
       throw new NotFoundException(`No projects found for the user`);
 
+    //   console.log(projectsResult);
+    // console.log(projectsResult[0].project.image);
 
-        // const projects = await Promise.all(
-        //   projectsResult.map(async (project) => {
-        //     var imageUrl: string | undefined = undefined;
-        //     if (project.project.image) {
-        //       imageUrl = await this.storageService.getFileUrl(project.project.image.key);
-        //     }
-    
-          
-        //     return {
-        //       ...project,
-        //       project: {
-        //         imageUrl:  project.project.image ? { ...project.project.image, url: imageUrl } : null
-        //       }
-              
-        //     };
-        //   }),
-        // );
-    
+    const projects = await Promise.all(
+      projectsResult.map(async (userProject) => {
+        var imageUrl: string | undefined = undefined;
 
+
+        if (userProject.project.image) {
+
+          imageUrl = await this.storageService.getFileUrl(userProject.project.image.key);
+          userProject.project.image.url = imageUrl;
+
+        }
+      }
+      )
+    )
     return {
       count: count,
       pages: Math.ceil(count / 6),

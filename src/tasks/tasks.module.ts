@@ -17,7 +17,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [TasksController],
-  providers: [TasksService, UserProjectsService],
+  providers: [TasksService],
   imports: [
     TypeOrmModule.forFeature([Task]),
     LessonsModule,
