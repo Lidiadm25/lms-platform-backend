@@ -31,7 +31,6 @@ Backend for **InnovaLearn**, an LMS platform currently in development for access
 - Add Keycloak and Google authentication.
 - Refactor DTOs and improve API response structures.
 - Implement proper error handling and management.
-- In `UserProjects`, retrieve image URLs dynamically.
 - Proper architecture in layers, dividing logic between services / repositories.
 
 ---
