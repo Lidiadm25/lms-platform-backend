@@ -5,6 +5,7 @@ import * as Minio from 'minio';
 import path, { join } from 'path';
 import { Repository } from 'typeorm';
 import { Files } from '../entities/file.entity';
+
 export const ValidExtensions = {
   IMAGES: ['jpeg', 'png', 'jpg', 'gif', 'bmp', 'webp'],
 
@@ -18,6 +19,8 @@ export const AllVailidExntesions = [
   ...ValidExtensions.DOCUMENTS,
 ];
 
+const urlApi = process.env.FILE_STORAGE_API;
+const urlMinio = process.env.MINIO_URL;
 @Injectable()
 export class StorageService {
   private minioClient!: Minio.Client;
@@ -66,7 +69,7 @@ export class StorageService {
     var url;
 
     if (this.provider === 'minio') {
-      url = 'http://localhost:9000/bucket-files/';
+      url = `${urlMinio}`;
 
       await this.minioClient.putObject(
         this.bucket,
@@ -82,7 +85,7 @@ export class StorageService {
       );
       // url = await this.minioClient.presignedGetObject(this.bucket, file.originalname,20000)
     } else {
-      url = 'http://localhost:3000/api/files/projects/';
+      url = `${urlApi}/`;
       const path = join(__dirname, '../../../static/projects', secureUrl);
       await this.fs.writeFile(path, file.buffer);
       url = url + secureUrl;
@@ -117,7 +120,7 @@ export class StorageService {
       );
     }
 
-    return `http://localhost:3000/api/files/project/${key}`;
+    return `${urlApi}/${key}`;
   }
 
   async uploadMultipleFiles(files: Express.Multer.File[]) {
@@ -136,7 +139,7 @@ export class StorageService {
       var url;
 
       if (this.provider === 'minio') {
-        url = 'http://localhost:9000/bucket-files/';
+        url = `${urlMinio}`;
 
         await this.minioClient.putObject(
           this.bucket,
@@ -152,7 +155,7 @@ export class StorageService {
         );
         // url = await this.minioClient.presignedGetObject(this.bucket, file.originalname,20000)
       } else {
-        url = 'http://localhost:3000/api/files/project/';
+        url = `${urlApi}/`;
         const path = join(__dirname, '../../../static/projects', secureUrl);
         await this.fs.writeFile(path, file.buffer);
         url = url + secureUrl;
@@ -175,4 +178,25 @@ export class StorageService {
     });
     return Promise.all(promises);
   }
+
+  async downloadFile(id: string) {
+    const file = await this.fileRepository.findOneBy({ id: id });
+    if (!file) throw new BadRequestException(`File not found`);
+
+    if (this.provider === 'minio') {
+      const reqParams = {
+        'response-content-disposition': `attachment; filename="${file.originalName}"`,
+      };
+
+      return await this.minioClient.presignedGetObject(
+        this.bucket,
+        file.key,
+        2 * 60 * 60,
+        reqParams,
+      );
+    }
+
+    return `${urlApi}/${file.key}`;
+  }
+
 }

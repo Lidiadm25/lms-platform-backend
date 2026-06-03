@@ -3,14 +3,10 @@ import {
   Controller,
   Get,
   Param,
-  Post,
   Res,
-  UploadedFiles,
-  UseInterceptors,
 } from '@nestjs/common';
-import type { Response } from 'express';
 
-import { FilesInterceptor } from '@nestjs/platform-express';
+import type { Response } from 'express';
 import { memoryStorage } from 'multer';
 import { FilesService } from './files.service';
 import { StorageService } from './storage/storage.service';
@@ -20,7 +16,7 @@ export class FilesController {
   constructor(
     private readonly filesService: FilesService,
     private readonly storageService: StorageService,
-  ) {}
+  ) { }
 
   @Get('project/:imageName')
   findProductImage(
@@ -47,29 +43,12 @@ export class FilesController {
     return { url };
   }
 
-  // @Post('bulk/:idTask')
-  // @UseInterceptors(
-  //   FilesInterceptor('documents', 10, {
-  //     // INTERCEPTOR PARA MULTIPLES ARCHIVOS
-  //     // fileFilter: fileFilter,
-  //     storage: memoryStorage(),
+  @Get('download/:id')
+  async downloadFile(@Param('id') id: string) {
+    const downloadUrl = await this.storageService.downloadFile(id)
+    return { url: downloadUrl };
 
-  //     limits: { fileSize: 2e9 },
-  //   }),
-  // )
-  // async uploadFiles(
-  //   @Param('idTask') idTask: String,
-  //   @UploadedFiles() file: Array<Express.Multer.File>,
-  // ) {
-  //   const currentProvider = this.storageService.getProvider();
 
-  //   const newFiles = await Promise.all(
-  //     file.map(async (files) => {
-  //       // const safeName = await this.storageService.uploadFile(files);
-  //       //  return safeName
-  //     }),
-  //   );
+  }
 
-  //   return newFiles;
-  // }
 }
